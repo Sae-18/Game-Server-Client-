@@ -1,0 +1,4442 @@
+[
+  {
+    "cardId": "C01",
+    "character": "Kuton Wataru",
+    "name": "Kuton Wataru",
+    "rarity": "C",
+    "position": "Midfielder",
+    "stamina": 11,
+    "stats": {
+      "shooting": {
+        "value": 67,
+        "cost": 2
+      },
+      "dribbling": {
+        "value": 65,
+        "cost": 2
+      },
+      "speed": {
+        "value": 65,
+        "cost": 2
+      },
+      "defending": {
+        "value": 66,
+        "cost": 2
+      },
+      "passing": {
+        "value": 67,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C02",
+    "character": "Igarashi Gurimu",
+    "name": "Igarashi Gurimu",
+    "rarity": "C",
+    "position": "Defender",
+    "stamina": 8,
+    "stats": {
+      "shooting": {
+        "value": 60,
+        "cost": 2
+      },
+      "dribbling": {
+        "value": 61,
+        "cost": 2
+      },
+      "speed": {
+        "value": 59,
+        "cost": 2
+      },
+      "defending": {
+        "value": 64,
+        "cost": 2
+      },
+      "passing": {
+        "value": 62,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C03",
+    "character": "Gagamaru Gin",
+    "name": "Gagamaru Gin",
+    "rarity": "C",
+    "position": "Striker",
+    "stamina": 12,
+    "stats": {
+      "shooting": {
+        "value": 72,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 64,
+        "cost": 3
+      },
+      "speed": {
+        "value": 66,
+        "cost": 3
+      },
+      "defending": {
+        "value": 64,
+        "cost": 3
+      },
+      "passing": {
+        "value": 67,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C04",
+    "character": "Raichi Jingo",
+    "name": "Raichi Jingo",
+    "rarity": "C",
+    "position": "Defender",
+    "stamina": 16,
+    "stats": {
+      "shooting": {
+        "value": 67,
+        "cost": 2
+      },
+      "dribbling": {
+        "value": 65,
+        "cost": 3
+      },
+      "speed": {
+        "value": 68,
+        "cost": 3
+      },
+      "defending": {
+        "value": 72,
+        "cost": 4
+      },
+      "passing": {
+        "value": 69,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C05",
+    "character": "Okuhito Lemon",
+    "name": "Okuhito Lemon",
+    "rarity": "C",
+    "position": "Goalkeeper",
+    "stamina": 15,
+    "stats": {
+      "shooting": {
+        "value": 55,
+        "cost": 1
+      },
+      "dribbling": {
+        "value": 58,
+        "cost": 2
+      },
+      "speed": {
+        "value": 67,
+        "cost": 2
+      },
+      "defending": {
+        "value": 74,
+        "cost": 3
+      },
+      "passing": {
+        "value": 62,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C06",
+    "character": "Wanima Keisuke",
+    "name": "Wanima Keisuke",
+    "rarity": "C",
+    "position": "Midfielder",
+    "stamina": 14,
+    "stats": {
+      "shooting": {
+        "value": 71,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 69,
+        "cost": 3
+      },
+      "speed": {
+        "value": 67,
+        "cost": 2
+      },
+      "defending": {
+        "value": 70,
+        "cost": 2
+      },
+      "passing": {
+        "value": 70,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C07",
+    "character": "Wanima Junichi",
+    "name": "Wanima Junichi",
+    "rarity": "C",
+    "position": "Midfielder",
+    "stamina": 14,
+    "stats": {
+      "shooting": {
+        "value": 70,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 70,
+        "cost": 3
+      },
+      "speed": {
+        "value": 67,
+        "cost": 2
+      },
+      "defending": {
+        "value": 69,
+        "cost": 2
+      },
+      "passing": {
+        "value": 69,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C08",
+    "character": "Okawa Hibiki",
+    "name": "Okawa Hibiki",
+    "rarity": "C",
+    "position": "Striker",
+    "stamina": 13,
+    "stats": {
+      "shooting": {
+        "value": 72,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 68,
+        "cost": 3
+      },
+      "speed": {
+        "value": 65,
+        "cost": 3
+      },
+      "defending": {
+        "value": 56,
+        "cost": 2
+      },
+      "passing": {
+        "value": 63,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C09",
+    "character": "Niko Ikki",
+    "name": "Niko Ikki",
+    "rarity": "C",
+    "position": "Striker",
+    "stamina": 12,
+    "stats": {
+      "shooting": {
+        "value": 68,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 67,
+        "cost": 3
+      },
+      "speed": {
+        "value": 67,
+        "cost": 3
+      },
+      "defending": {
+        "value": 73,
+        "cost": 3
+      },
+      "passing": {
+        "value": 71,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C10",
+    "character": "Naruhaya Asahi",
+    "name": "Naruhaya Asahi (striker)",
+    "rarity": "C",
+    "position": "Striker",
+    "stamina": 13,
+    "stats": {
+      "shooting": {
+        "value": 72,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 71,
+        "cost": 3
+      },
+      "speed": {
+        "value": 69,
+        "cost": 3
+      },
+      "defending": {
+        "value": 70,
+        "cost": 2
+      },
+      "passing": {
+        "value": 72,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C11",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi",
+    "rarity": "C",
+    "position": "Midfielder",
+    "stamina": 13,
+    "stats": {
+      "shooting": {
+        "value": 69,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 67,
+        "cost": 3
+      },
+      "speed": {
+        "value": 64,
+        "cost": 2
+      },
+      "defending": {
+        "value": 68,
+        "cost": 2
+      },
+      "passing": {
+        "value": 71,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C12",
+    "character": "Bachira Meguru",
+    "name": "Bachira Meguru",
+    "rarity": "C",
+    "position": "Striker",
+    "stamina": 12,
+    "stats": {
+      "shooting": {
+        "value": 68,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 72,
+        "cost": 4
+      },
+      "speed": {
+        "value": 63,
+        "cost": 3
+      },
+      "defending": {
+        "value": 59,
+        "cost": 2
+      },
+      "passing": {
+        "value": 74,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "C13",
+    "character": "Kunigami Rensuke",
+    "name": "Kunigami Rensuke",
+    "rarity": "C",
+    "position": "Striker",
+    "stamina": 15,
+    "stats": {
+      "shooting": {
+        "value": 74,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 69,
+        "cost": 3
+      },
+      "speed": {
+        "value": 61,
+        "cost": 3
+      },
+      "defending": {
+        "value": 55,
+        "cost": 2
+      },
+      "passing": {
+        "value": 68,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C14",
+    "character": "Chigiri Hyoma",
+    "name": "Chigiri Hyoma",
+    "rarity": "C",
+    "position": "Defender",
+    "stamina": 10,
+    "stats": {
+      "shooting": {
+        "value": 67,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 68,
+        "cost": 3
+      },
+      "speed": {
+        "value": 73,
+        "cost": 3
+      },
+      "defending": {
+        "value": 63,
+        "cost": 2
+      },
+      "passing": {
+        "value": 69,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C15",
+    "character": "Imamura Yudai",
+    "name": "Imamura Yudai",
+    "rarity": "C",
+    "position": "Defender",
+    "stamina": 11,
+    "stats": {
+      "shooting": {
+        "value": 64,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 66,
+        "cost": 3
+      },
+      "speed": {
+        "value": 61,
+        "cost": 3
+      },
+      "defending": {
+        "value": 65,
+        "cost": 2
+      },
+      "passing": {
+        "value": 67,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "C16",
+    "character": "Naruhaya Asahi",
+    "name": "Naruhaya Asahi (defender)",
+    "rarity": "C",
+    "position": "Defender",
+    "stamina": 11,
+    "stats": {
+      "shooting": {
+        "value": 66,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 68,
+        "cost": 3
+      },
+      "speed": {
+        "value": 60,
+        "cost": 3
+      },
+      "defending": {
+        "value": 64,
+        "cost": 2
+      },
+      "passing": {
+        "value": 68,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B01",
+    "character": "Kira Ryosuke",
+    "name": "Kira Ryosuke",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 13,
+    "stats": {
+      "shooting": {
+        "value": 74,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 68,
+        "cost": 3
+      },
+      "speed": {
+        "value": 69,
+        "cost": 3
+      },
+      "defending": {
+        "value": 63,
+        "cost": 2
+      },
+      "passing": {
+        "value": 66,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B02",
+    "character": "Barou Shouei",
+    "name": "Barou Shouei (TEAM X )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 15,
+    "stats": {
+      "shooting": {
+        "value": 77,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 73,
+        "cost": 4
+      },
+      "speed": {
+        "value": 70,
+        "cost": 3
+      },
+      "defending": {
+        "value": 62,
+        "cost": 2
+      },
+      "passing": {
+        "value": 58,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B03",
+    "character": "Zantetsu Tsurugi",
+    "name": "Zantetsu Tsurugi ( TEAM V )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 14,
+    "stats": {
+      "shooting": {
+        "value": 74,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 66,
+        "cost": 3
+      },
+      "speed": {
+        "value": 74,
+        "cost": 4
+      },
+      "defending": {
+        "value": 67,
+        "cost": 2
+      },
+      "passing": {
+        "value": 68,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B04",
+    "character": "Reo Mikage",
+    "name": "Reo Mikage ( TEAM V )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 15,
+    "stats": {
+      "shooting": {
+        "value": 72,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 73,
+        "cost": 4
+      },
+      "speed": {
+        "value": 70,
+        "cost": 3
+      },
+      "defending": {
+        "value": 71,
+        "cost": 3
+      },
+      "passing": {
+        "value": 75,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B05",
+    "character": "Seishiro Nagi",
+    "name": "Seishiro Nagi ( TEAM V )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 16,
+    "stats": {
+      "shooting": {
+        "value": 76,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 74,
+        "cost": 4
+      },
+      "speed": {
+        "value": 71,
+        "cost": 3
+      },
+      "defending": {
+        "value": 67,
+        "cost": 2
+      },
+      "passing": {
+        "value": 70,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B06",
+    "character": "Aryu Jyubei",
+    "name": "Aryu Jyubei ( VS BACHIRA)",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 76,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 71,
+        "cost": 3
+      },
+      "speed": {
+        "value": 71,
+        "cost": 3
+      },
+      "defending": {
+        "value": 78,
+        "cost": 4
+      },
+      "passing": {
+        "value": 74,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B07",
+    "character": "Tokimitsu Aoshi",
+    "name": "Tokimitsu Aoshi ( VS BACHIRA)",
+    "rarity": "B",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 72,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 74,
+        "cost": 3
+      },
+      "speed": {
+        "value": 75,
+        "cost": 4
+      },
+      "defending": {
+        "value": 70,
+        "cost": 2
+      },
+      "passing": {
+        "value": 76,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B08",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi ( X NAGI X BACHIRA )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 16,
+    "stats": {
+      "shooting": {
+        "value": 76,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 70,
+        "cost": 2
+      },
+      "speed": {
+        "value": 69,
+        "cost": 2
+      },
+      "defending": {
+        "value": 72,
+        "cost": 3
+      },
+      "passing": {
+        "value": 75,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B09",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro ( X ISAGI X BACHIRA )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 78,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 75,
+        "cost": 3
+      },
+      "speed": {
+        "value": 72,
+        "cost": 3
+      },
+      "defending": {
+        "value": 68,
+        "cost": 2
+      },
+      "passing": {
+        "value": 72,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B10",
+    "character": "Bachira Meguru",
+    "name": "Bachira Meguru ( X ISAGI X NAGI )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 16,
+    "stats": {
+      "shooting": {
+        "value": 72,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 78,
+        "cost": 4
+      },
+      "speed": {
+        "value": 70,
+        "cost": 3
+      },
+      "defending": {
+        "value": 67,
+        "cost": 2
+      },
+      "passing": {
+        "value": 77,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B11",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi ( VS BAROU )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 78,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 72,
+        "cost": 3
+      },
+      "speed": {
+        "value": 70,
+        "cost": 3
+      },
+      "defending": {
+        "value": 73,
+        "cost": 3
+      },
+      "passing": {
+        "value": 78,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B12",
+    "character": "Barou Shouei",
+    "name": "Barou Shouei ( VS ISAGI NAGI )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 75,
+        "cost": 3
+      },
+      "speed": {
+        "value": 73,
+        "cost": 3
+      },
+      "defending": {
+        "value": 64,
+        "cost": 2
+      },
+      "passing": {
+        "value": 60,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B13",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro ( VS BAROU )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 81,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 77,
+        "cost": 4
+      },
+      "speed": {
+        "value": 73,
+        "cost": 3
+      },
+      "defending": {
+        "value": 70,
+        "cost": 3
+      },
+      "passing": {
+        "value": 75,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B14",
+    "character": "Kunigami Rensuke",
+    "name": "Kunigami Rensuke ( 3V3 )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 72,
+        "cost": 4
+      },
+      "speed": {
+        "value": 70,
+        "cost": 3
+      },
+      "defending": {
+        "value": 70,
+        "cost": 3
+      },
+      "passing": {
+        "value": 70,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B15",
+    "character": "Reo Mikage",
+    "name": "Reo Mikage( 3V3 )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 73,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 74,
+        "cost": 3
+      },
+      "speed": {
+        "value": 72,
+        "cost": 3
+      },
+      "defending": {
+        "value": 73,
+        "cost": 3
+      },
+      "passing": {
+        "value": 78,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "B16",
+    "character": "Chigiri Hyoma",
+    "name": "Chigiri Hyoma( 3V3 )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 14,
+    "stats": {
+      "shooting": {
+        "value": 74,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 71,
+        "cost": 3
+      },
+      "speed": {
+        "value": 76,
+        "cost": 3
+      },
+      "defending": {
+        "value": 70,
+        "cost": 2
+      },
+      "passing": {
+        "value": 72,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B17",
+    "character": "Barou Shouei",
+    "name": "Barou Shouei( 3V3 )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 82,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 77,
+        "cost": 4
+      },
+      "speed": {
+        "value": 74,
+        "cost": 3
+      },
+      "defending": {
+        "value": 68,
+        "cost": 3
+      },
+      "passing": {
+        "value": 68,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B18",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro( 3V3 )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 83,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 78,
+        "cost": 4
+      },
+      "speed": {
+        "value": 75,
+        "cost": 3
+      },
+      "defending": {
+        "value": 74,
+        "cost": 3
+      },
+      "passing": {
+        "value": 76,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B19",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi( 3V3 )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 81,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 75,
+        "cost": 3
+      },
+      "speed": {
+        "value": 71,
+        "cost": 2
+      },
+      "defending": {
+        "value": 75,
+        "cost": 3
+      },
+      "passing": {
+        "value": 80,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "B20",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi (4V4)",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 82,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 76,
+        "cost": 3
+      },
+      "speed": {
+        "value": 73,
+        "cost": 3
+      },
+      "defending": {
+        "value": 77,
+        "cost": 3
+      },
+      "passing": {
+        "value": 81,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "B21",
+    "character": "Barou Shouei",
+    "name": "Barou Shouei (4V4)",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 83,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 79,
+        "cost": 4
+      },
+      "speed": {
+        "value": 75,
+        "cost": 3
+      },
+      "defending": {
+        "value": 69,
+        "cost": 2
+      },
+      "passing": {
+        "value": 71,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B22",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro (4V4)",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 81,
+        "cost": 4
+      },
+      "speed": {
+        "value": 76,
+        "cost": 3
+      },
+      "defending": {
+        "value": 76,
+        "cost": 3
+      },
+      "passing": {
+        "value": 77,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B23",
+    "character": "Bachira Meguru",
+    "name": "Bachira Meguru (4V4)",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 16,
+    "stats": {
+      "shooting": {
+        "value": 81,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 4
+      },
+      "speed": {
+        "value": 74,
+        "cost": 3
+      },
+      "defending": {
+        "value": 69,
+        "cost": 2
+      },
+      "passing": {
+        "value": 81,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B24",
+    "character": "Tokimitsu Aoshi",
+    "name": "Tokimitsu Aoshi (4V4)",
+    "rarity": "B",
+    "position": "Midfielder",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 78,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 77,
+        "cost": 3
+      },
+      "speed": {
+        "value": 76,
+        "cost": 3
+      },
+      "defending": {
+        "value": 72,
+        "cost": 2
+      },
+      "passing": {
+        "value": 78,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B25",
+    "character": "Chigiri Hyoma",
+    "name": "Chigiri Hyoma (4V4)",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 16,
+    "stats": {
+      "shooting": {
+        "value": 76,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 73,
+        "cost": 3
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 74,
+        "cost": 3
+      },
+      "passing": {
+        "value": 73,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "B26",
+    "character": "Aryu Jyubei",
+    "name": "Aryu Jyubei (4V4)",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 79,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 74,
+        "cost": 3
+      },
+      "speed": {
+        "value": 74,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 4
+      },
+      "passing": {
+        "value": 75,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B27",
+    "character": "Hiori Yo",
+    "name": "Hiori Yo ( 2ND SEL )",
+    "rarity": "B",
+    "position": "Midfielder",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 74,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 73,
+        "cost": 3
+      },
+      "speed": {
+        "value": 75,
+        "cost": 3
+      },
+      "defending": {
+        "value": 74,
+        "cost": 2
+      },
+      "passing": {
+        "value": 81,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "B28",
+    "character": "Nanase Nijiro",
+    "name": "Nanase Nijiro ( 2ND SEL )",
+    "rarity": "B",
+    "position": "Defender",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 71,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 70,
+        "cost": 2
+      },
+      "speed": {
+        "value": 73,
+        "cost": 3
+      },
+      "defending": {
+        "value": 75,
+        "cost": 3
+      },
+      "passing": {
+        "value": 78,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B29",
+    "character": "Reo Mikage",
+    "name": "Reo Mikage ( 2ND SEL )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 78,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 76,
+        "cost": 3
+      },
+      "speed": {
+        "value": 76,
+        "cost": 3
+      },
+      "defending": {
+        "value": 75,
+        "cost": 3
+      },
+      "passing": {
+        "value": 79,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B30",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi ( 2ND SEL )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 77,
+        "cost": 3
+      },
+      "speed": {
+        "value": 75,
+        "cost": 3
+      },
+      "defending": {
+        "value": 77,
+        "cost": 3
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "B31",
+    "character": "Chigiri Hyoma",
+    "name": "Chigiri Hyoma ( WND SEL )",
+    "rarity": "B",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 77,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 76,
+        "cost": 3
+      },
+      "speed": {
+        "value": 82,
+        "cost": 4
+      },
+      "defending": {
+        "value": 76,
+        "cost": 3
+      },
+      "passing": {
+        "value": 76,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A01",
+    "character": "Otoya Eita",
+    "name": "Otoya Eita ( 2ND SEL )",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 82,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 4
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 76,
+        "cost": 3
+      },
+      "passing": {
+        "value": 80,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A02",
+    "character": "Karasu Tabito",
+    "name": "Karasu Tabito ( 2ND SEL )",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 83,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 3
+      },
+      "speed": {
+        "value": 76,
+        "cost": 3
+      },
+      "defending": {
+        "value": 78,
+        "cost": 3
+      },
+      "passing": {
+        "value": 81,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A03",
+    "character": "Yukimiya Kenyu",
+    "name": "Yukimiya Kenyu ( 2ND SEL )",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 4
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 70,
+        "cost": 2
+      },
+      "passing": {
+        "value": 79,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A04",
+    "character": "Shidou Ryusei",
+    "name": "Shidou Ryusei ( 2ND SEL )",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 87,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 82,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 72,
+        "cost": 3
+      },
+      "passing": {
+        "value": 77,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A05",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro ( 2ND SEL )",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 88,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 4
+      },
+      "speed": {
+        "value": 77,
+        "cost": 3
+      },
+      "defending": {
+        "value": 77,
+        "cost": 3
+      },
+      "passing": {
+        "value": 78,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A06",
+    "character": "Rin Itoshi",
+    "name": "Rin Itoshi (4v4)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 82,
+        "cost": 4
+      },
+      "speed": {
+        "value": 76,
+        "cost": 3
+      },
+      "defending": {
+        "value": 77,
+        "cost": 3
+      },
+      "passing": {
+        "value": 85,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A07",
+    "character": "Rin Itoshi",
+    "name": "Rin Itoshi (3v3)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 82,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 81,
+        "cost": 4
+      },
+      "speed": {
+        "value": 73,
+        "cost": 3
+      },
+      "defending": {
+        "value": 76,
+        "cost": 3
+      },
+      "passing": {
+        "value": 84,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A08",
+    "character": "Rin Itoshi",
+    "name": "Rin Itoshi ( 2ND SEL )",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 86,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 4
+      },
+      "speed": {
+        "value": 77,
+        "cost": 3
+      },
+      "defending": {
+        "value": 78,
+        "cost": 2
+      },
+      "passing": {
+        "value": 86,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "A09",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 87,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 81,
+        "cost": 3
+      },
+      "speed": {
+        "value": 77,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 3
+      },
+      "passing": {
+        "value": 84,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A10",
+    "character": "Barou Shouei",
+    "name": "Barou Shouei (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 86,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 75,
+        "cost": 3
+      },
+      "passing": {
+        "value": 73,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A11",
+    "character": "Yukimiya Kenyu",
+    "name": "Yukimiya Kenyu (U20)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 87,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 87,
+        "cost": 4
+      },
+      "speed": {
+        "value": 82,
+        "cost": 3
+      },
+      "defending": {
+        "value": 72,
+        "cost": 2
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A12",
+    "character": "Reo Mikage",
+    "name": "Reo Mikage (U20)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 79,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 77,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 4
+      },
+      "passing": {
+        "value": 81,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A13",
+    "character": "Chigiri Hyoma",
+    "name": "Chigiri Hyoma (U20)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 79,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 78,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 4
+      },
+      "defending": {
+        "value": 81,
+        "cost": 2
+      },
+      "passing": {
+        "value": 78,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A14",
+    "character": "Karasu Tabito",
+    "name": "Karasu Tabito (U20)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 4
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 3
+      },
+      "passing": {
+        "value": 84,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A15",
+    "character": "Gagamaru Gin",
+    "name": "Gagamaru Gin (U20)",
+    "rarity": "A",
+    "position": "Goalkeeper",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 75,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 70,
+        "cost": 3
+      },
+      "speed": {
+        "value": 82,
+        "cost": 2
+      },
+      "defending": {
+        "value": 89,
+        "cost": 3
+      },
+      "passing": {
+        "value": 86,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A16",
+    "character": "Blue Lock Man",
+    "name": "Blue Lock Man",
+    "rarity": "A",
+    "position": "Goalkeeper",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 75,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 70,
+        "cost": 3
+      },
+      "speed": {
+        "value": 80,
+        "cost": 2
+      },
+      "defending": {
+        "value": 85,
+        "cost": 3
+      },
+      "passing": {
+        "value": 84,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A17",
+    "character": "Hiori Yo",
+    "name": "Hiori Yo (U20)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 79,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 76,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 2
+      },
+      "defending": {
+        "value": 77,
+        "cost": 2
+      },
+      "passing": {
+        "value": 86,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A18",
+    "character": "Aryu Jyubei",
+    "name": "Aryu Jyubei (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 81,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 75,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 4
+      },
+      "passing": {
+        "value": 77,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A19",
+    "character": "Bachira Meguru",
+    "name": "Bachira Meguru (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 4
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 73,
+        "cost": 2
+      },
+      "passing": {
+        "value": 85,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A20",
+    "character": "Otoya Eita",
+    "name": "Otoya Eita (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 83,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 3
+      },
+      "speed": {
+        "value": 81,
+        "cost": 3
+      },
+      "defending": {
+        "value": 77,
+        "cost": 2
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A21",
+    "character": "Oliver Aiku",
+    "name": "Oliver Aiku (U20)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 79,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 77,
+        "cost": 3
+      },
+      "speed": {
+        "value": 81,
+        "cost": 3
+      },
+      "defending": {
+        "value": 88,
+        "cost": 4
+      },
+      "passing": {
+        "value": 81,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A22",
+    "character": "Niko Ikki",
+    "name": "Niko Ikki (U20)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 75,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 76,
+        "cost": 3
+      },
+      "speed": {
+        "value": 80,
+        "cost": 3
+      },
+      "defending": {
+        "value": 86,
+        "cost": 3
+      },
+      "passing": {
+        "value": 83,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A23",
+    "character": "Shuto Sendo",
+    "name": "Shuto Sendo (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 86,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 82,
+        "cost": 3
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 3
+      },
+      "passing": {
+        "value": 84,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A24",
+    "character": "Kazuma Niou",
+    "name": "Kazuma Niou (U20)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 74,
+        "cost": 2
+      },
+      "dribbling": {
+        "value": 73,
+        "cost": 2
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 4
+      },
+      "passing": {
+        "value": 81,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A25",
+    "character": "Miroku Darai",
+    "name": "Miroku Darai (U20)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 72,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 78,
+        "cost": 3
+      },
+      "speed": {
+        "value": 80,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 4
+      },
+      "passing": {
+        "value": 81,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A26",
+    "character": "Teppei Neru",
+    "name": "Teppei Neru (U20)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 73,
+        "cost": 2
+      },
+      "dribbling": {
+        "value": 80,
+        "cost": 3
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 83,
+        "cost": 4
+      },
+      "passing": {
+        "value": 78,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A27",
+    "character": "Teru Kitsunezato",
+    "name": "Teru Kitsunezato (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 80,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 76,
+        "cost": 3
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A28",
+    "character": "Kento Cho",
+    "name": "Kento Cho (U20)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 83,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 81,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 74,
+        "cost": 2
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A29",
+    "character": "Haru Hayate",
+    "name": "Haru Hayate (U20)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 78,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 81,
+        "cost": 3
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 81,
+        "cost": 3
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A30",
+    "character": "Itsuki Wakatsuki",
+    "name": "Itsuki Wakatsuki (U20)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 77,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 79,
+        "cost": 3
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 83,
+        "cost": 3
+      },
+      "passing": {
+        "value": 84,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A31",
+    "character": "Fukaku Gen",
+    "name": "Fukaku Gen (U20)",
+    "rarity": "A",
+    "position": "Goalkeeper",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 71,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 62,
+        "cost": 3
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 87,
+        "cost": 3
+      },
+      "passing": {
+        "value": 83,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A32",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi (BM VS BARCHA)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 88,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 82,
+        "cost": 3
+      },
+      "speed": {
+        "value": 79,
+        "cost": 3
+      },
+      "defending": {
+        "value": 81,
+        "cost": 3
+      },
+      "passing": {
+        "value": 86,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A33",
+    "character": "Grim",
+    "name": "Grim (BM VS BARCHA)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 3
+      },
+      "speed": {
+        "value": 80,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 2
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A34",
+    "character": "Agi",
+    "name": "Agi (BM VS BARCHA)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 89,
+        "cost": 4
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 3
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A35",
+    "character": "Kurona Ranze",
+    "name": "Kurona Ranze (BM VS CITY)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 17,
+    "stats": {
+      "shooting": {
+        "value": 77,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 82,
+        "cost": 3
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 79,
+        "cost": 3
+      },
+      "passing": {
+        "value": 86,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A36",
+    "character": "Aryu Jyubei",
+    "name": "Aryu Jyubei(BM VS UBERS)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 83,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 79,
+        "cost": 3
+      },
+      "speed": {
+        "value": 81,
+        "cost": 3
+      },
+      "defending": {
+        "value": 88,
+        "cost": 4
+      },
+      "passing": {
+        "value": 86,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A37",
+    "character": "Kurona Ranze",
+    "name": "Kurona Ranze(BM VS UBERS)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 79,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 4
+      },
+      "defending": {
+        "value": 81,
+        "cost": 2
+      },
+      "passing": {
+        "value": 88,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A38",
+    "character": "Hiori Yo",
+    "name": "Hiori Yo(BM VS UBERS)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 3
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 81,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "A39",
+    "character": "Kurona Ranze",
+    "name": "Kurona Ranze(BM VS PXG))",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 3
+      },
+      "speed": {
+        "value": 88,
+        "cost": 3
+      },
+      "defending": {
+        "value": 81,
+        "cost": 3
+      },
+      "passing": {
+        "value": 88,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "A40",
+    "character": "Raichi Jingo",
+    "name": "Raichi Jingo(BM VS UBERS)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 79,
+        "cost": 3
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 86,
+        "cost": 4
+      },
+      "passing": {
+        "value": 81,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A41",
+    "character": "Zantetsu Tsurugi",
+    "name": "Zantetsu Tsurugi(BM VS UBERS)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 79,
+        "cost": 3
+      },
+      "speed": {
+        "value": 89,
+        "cost": 3
+      },
+      "defending": {
+        "value": 83,
+        "cost": 4
+      },
+      "passing": {
+        "value": 82,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A42",
+    "character": "Raichi Jingo",
+    "name": "Raichi Jingo(BM VS PXG)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 82,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 88,
+        "cost": 4
+      },
+      "passing": {
+        "value": 84,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A43",
+    "character": "Kiyora Jin",
+    "name": "Kiyora Jin(BM VS PXG)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 87,
+        "cost": 3
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A44",
+    "character": "Igarashi Gurimu",
+    "name": "Igarashi Gurimu(BM VS PXG)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 77,
+        "cost": 2
+      },
+      "dribbling": {
+        "value": 74,
+        "cost": 2
+      },
+      "speed": {
+        "value": 84,
+        "cost": 2
+      },
+      "defending": {
+        "value": 84,
+        "cost": 3
+      },
+      "passing": {
+        "value": 86,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A45",
+    "character": "Nanase Nijiro",
+    "name": "Nanase Nijiro(BM VS PXG)",
+    "rarity": "A",
+    "position": "Defender",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 81,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 2
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 83,
+        "cost": 3
+      },
+      "passing": {
+        "value": 88,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "A46",
+    "character": "Tokimitsu Aoshi",
+    "name": "Tokimitsu Aoshi(BM VS PXG)",
+    "rarity": "A",
+    "position": "Midfielder",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 3
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 83,
+        "cost": 2
+      },
+      "passing": {
+        "value": 82,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "A47",
+    "character": "Shuto Sendo",
+    "name": "Shuto Sendo(BM VS UBERS)",
+    "rarity": "A",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 89,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 3
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 3
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S01",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro (U20)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 90,
+        "cost": 5
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 4
+      },
+      "speed": {
+        "value": 78,
+        "cost": 3
+      },
+      "defending": {
+        "value": 79,
+        "cost": 3
+      },
+      "passing": {
+        "value": 80,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S02",
+    "character": "Shidou Ryusei",
+    "name": "Shidou Ryusei (U20)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 92,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 4
+      },
+      "speed": {
+        "value": 80,
+        "cost": 3
+      },
+      "defending": {
+        "value": 74,
+        "cost": 3
+      },
+      "passing": {
+        "value": 79,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S03",
+    "character": "Sae Itoshi",
+    "name": "Sae Itoshi (U20)",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 93,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 4
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 86,
+        "cost": 3
+      },
+      "passing": {
+        "value": 94,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S04",
+    "character": "Rin Itoshi",
+    "name": "Rin Itoshi (U20)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 89,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 87,
+        "cost": 4
+      },
+      "speed": {
+        "value": 80,
+        "cost": 3
+      },
+      "defending": {
+        "value": 81,
+        "cost": 3
+      },
+      "passing": {
+        "value": 88,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S05",
+    "character": "Kunigami Rensuke",
+    "name": "Kunigami Rensuke ( BM VS BARCHA)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 88,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 3
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 82,
+        "cost": 3
+      },
+      "passing": {
+        "value": 83,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S06",
+    "character": "Michael Kaiser",
+    "name": "Michael Kaiser ( BM VS BARCHA)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 93,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 86,
+        "cost": 4
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S07",
+    "character": "Alexis Ness",
+    "name": "Alexis Ness ( BM VS BARCHA)",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 4
+      },
+      "speed": {
+        "value": 82,
+        "cost": 3
+      },
+      "defending": {
+        "value": 77,
+        "cost": 3
+      },
+      "passing": {
+        "value": 91,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S08",
+    "character": "Bachira Meguru",
+    "name": "Bachira Meguru ( BM VS BARCHA)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 90,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 91,
+        "cost": 4
+      },
+      "speed": {
+        "value": 82,
+        "cost": 3
+      },
+      "defending": {
+        "value": 78,
+        "cost": 3
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S09",
+    "character": "Otoya Eita",
+    "name": "Otoya Eita ( BM VS BARCHA)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 87,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 87,
+        "cost": 4
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 83,
+        "cost": 3
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S10",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro (BM VS CITY)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 93,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 87,
+        "cost": 4
+      },
+      "speed": {
+        "value": 83,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 3
+      },
+      "passing": {
+        "value": 83,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S11",
+    "character": "Reo Mikage",
+    "name": "Reo Mikage (BM VS CITY)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 86,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 83,
+        "cost": 3
+      },
+      "speed": {
+        "value": 83,
+        "cost": 3
+      },
+      "defending": {
+        "value": 88,
+        "cost": 4
+      },
+      "passing": {
+        "value": 85,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S12",
+    "character": "Chigiri Hyoma",
+    "name": "Chigiri Hyoma (BM VS CITY)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 81,
+        "cost": 4
+      },
+      "speed": {
+        "value": 90,
+        "cost": 3
+      },
+      "defending": {
+        "value": 81,
+        "cost": 2
+      },
+      "passing": {
+        "value": 80,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "S13",
+    "character": "Michael Kaiser",
+    "name": "Michael Kaiser (BM VS CITY)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 94,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 4
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S14",
+    "character": "Alexis Ness",
+    "name": "Alexis Ness (BM VS CITY)",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 86,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 90,
+        "cost": 4
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 78,
+        "cost": 3
+      },
+      "passing": {
+        "value": 92,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S15",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi (BM VS CITY)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 90,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 3
+      },
+      "speed": {
+        "value": 81,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 3
+      },
+      "passing": {
+        "value": 88,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S16",
+    "character": "Kunigami Rensuke",
+    "name": "Kunigami Rensuke (BM VS CITY)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 90,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 3
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 3
+      },
+      "passing": {
+        "value": 83,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S17",
+    "character": "Yukimiya Kenyu",
+    "name": "Yukimiya Kenyu (BM VS CITY)",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 89,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 90,
+        "cost": 4
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 3
+      },
+      "passing": {
+        "value": 84,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S18",
+    "character": "Gagamaru Gin",
+    "name": "Gagamaru Gin (BM VS CITY)",
+    "rarity": "S",
+    "position": "Goalkeeper",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 78,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 72,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 91,
+        "cost": 4
+      },
+      "passing": {
+        "value": 88,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S19",
+    "character": "Blue Lock Man",
+    "name": "Blue Lock Man",
+    "rarity": "S",
+    "position": "Goalkeeper",
+    "stamina": 24,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 75,
+        "cost": 3
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 89,
+        "cost": 3
+      },
+      "passing": {
+        "value": 90,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S20",
+    "character": "Barou Shouei",
+    "name": "Barou Shouei (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 94,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 89,
+        "cost": 4
+      },
+      "speed": {
+        "value": 88,
+        "cost": 3
+      },
+      "defending": {
+        "value": 82,
+        "cost": 3
+      },
+      "passing": {
+        "value": 80,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S21",
+    "character": "Don Lorenzo",
+    "name": "Don Lorenzo (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Defender",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 91,
+        "cost": 4
+      },
+      "speed": {
+        "value": 87,
+        "cost": 4
+      },
+      "defending": {
+        "value": 92,
+        "cost": 4
+      },
+      "passing": {
+        "value": 89,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S22",
+    "character": "Niko Ikki",
+    "name": "Niko Ikki (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Defender",
+    "stamina": 18,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 82,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 90,
+        "cost": 4
+      },
+      "passing": {
+        "value": 89,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S23",
+    "character": "Oliver Aiku",
+    "name": "Oliver Aiku (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Defender",
+    "stamina": 19,
+    "stats": {
+      "shooting": {
+        "value": 81,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 79,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 91,
+        "cost": 4
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S24",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 92,
+        "cost": 5
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 4
+      },
+      "speed": {
+        "value": 85,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S25",
+    "character": "Kunigami Rensuke",
+    "name": "Kunigami Rensuke (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 23,
+    "stats": {
+      "shooting": {
+        "value": 91,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 4
+      },
+      "passing": {
+        "value": 85,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S26",
+    "character": "Gagamaru Gin",
+    "name": "Gagamaru Gin (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Goalkeeper",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 79,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 74,
+        "cost": 3
+      },
+      "speed": {
+        "value": 87,
+        "cost": 2
+      },
+      "defending": {
+        "value": 93,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "S27",
+    "character": "Blue Lock Man",
+    "name": "Blue Lock Man",
+    "rarity": "S",
+    "position": "Goalkeeper",
+    "stamina": 24,
+    "stats": {
+      "shooting": {
+        "value": 85,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 80,
+        "cost": 3
+      },
+      "speed": {
+        "value": 85,
+        "cost": 2
+      },
+      "defending": {
+        "value": 92,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "S28",
+    "character": "Alexis Ness",
+    "name": "Alexis Ness (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 87,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 91,
+        "cost": 4
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 79,
+        "cost": 3
+      },
+      "passing": {
+        "value": 93,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S29",
+    "character": "Michael Kaiser",
+    "name": "Michael Kaiser (BM VS UBERS)",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 95,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 89,
+        "cost": 4
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 87,
+        "cost": 4
+      },
+      "passing": {
+        "value": 90,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S30",
+    "character": "Charles Chevalier",
+    "name": "Charles Chevalier ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 84,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 3
+      },
+      "passing": {
+        "value": 95,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S31",
+    "character": "Rin Itoshi",
+    "name": "Rin Itoshi ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 94,
+        "cost": 5
+      },
+      "dribbling": {
+        "value": 93,
+        "cost": 4
+      },
+      "speed": {
+        "value": 87,
+        "cost": 3
+      },
+      "defending": {
+        "value": 87,
+        "cost": 3
+      },
+      "passing": {
+        "value": 91,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S32",
+    "character": "Karasu Tabito",
+    "name": "Karasu Tabito ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 86,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 4
+      },
+      "speed": {
+        "value": 87,
+        "cost": 3
+      },
+      "defending": {
+        "value": 87,
+        "cost": 3
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S33",
+    "character": "Shidou Ryusei",
+    "name": "Shidou Ryusei ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 95,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 4
+      },
+      "speed": {
+        "value": 87,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 3
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S34",
+    "character": "Michael Kaiser",
+    "name": "Michael Kaiser ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 96,
+        "cost": 5
+      },
+      "dribbling": {
+        "value": 90,
+        "cost": 4
+      },
+      "speed": {
+        "value": 87,
+        "cost": 3
+      },
+      "defending": {
+        "value": 90,
+        "cost": 4
+      },
+      "passing": {
+        "value": 91,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S35",
+    "character": "Isagi Yoichi",
+    "name": "Isagi Yoichi ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 22,
+    "stats": {
+      "shooting": {
+        "value": 94,
+        "cost": 5
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 3
+      },
+      "speed": {
+        "value": 87,
+        "cost": 3
+      },
+      "defending": {
+        "value": 89,
+        "cost": 4
+      },
+      "passing": {
+        "value": 91,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S36",
+    "character": "Gagamaru Gin",
+    "name": "Gagamaru Gin ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Goalkeeper",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 80,
+        "cost": 3
+      },
+      "dribbling": {
+        "value": 75,
+        "cost": 3
+      },
+      "speed": {
+        "value": 89,
+        "cost": 2
+      },
+      "defending": {
+        "value": 95,
+        "cost": 3
+      },
+      "passing": {
+        "value": 90,
+        "cost": 2
+      }
+    }
+  },
+  {
+    "cardId": "S37",
+    "character": "Yukimiya Kenyu",
+    "name": "Yukimiya Kenyu ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 90,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 92,
+        "cost": 4
+      },
+      "speed": {
+        "value": 88,
+        "cost": 3
+      },
+      "defending": {
+        "value": 87,
+        "cost": 3
+      },
+      "passing": {
+        "value": 86,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S38",
+    "character": "Hiori Yo",
+    "name": "Hiori Yo ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 87,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 88,
+        "cost": 4
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 85,
+        "cost": 3
+      },
+      "passing": {
+        "value": 92,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S39",
+    "character": "Kunigami Rensuke",
+    "name": "Kunigami Rensuke ( BM VS PXG )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 23,
+    "stats": {
+      "shooting": {
+        "value": 92,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 86,
+        "cost": 3
+      },
+      "speed": {
+        "value": 87,
+        "cost": 3
+      },
+      "defending": {
+        "value": 87,
+        "cost": 4
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S40",
+    "character": "Otoya Eita",
+    "name": "Otoya Eita ( BARCHA VS CITY )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 89,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 87,
+        "cost": 3
+      },
+      "speed": {
+        "value": 87,
+        "cost": 3
+      },
+      "defending": {
+        "value": 86,
+        "cost": 3
+      },
+      "passing": {
+        "value": 89,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S41",
+    "character": "Bachira Meguru",
+    "name": "Bachira Meguru ( BARCHA VS CITY )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 21,
+    "stats": {
+      "shooting": {
+        "value": 92,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 93,
+        "cost": 4
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 81,
+        "cost": 3
+      },
+      "passing": {
+        "value": 90,
+        "cost": 4
+      }
+    }
+  },
+  {
+    "cardId": "S42",
+    "character": "Nagi Seishiro",
+    "name": "Nagi Seishiro ( BARCHA VS CITY )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 92,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 89,
+        "cost": 4
+      },
+      "speed": {
+        "value": 84,
+        "cost": 3
+      },
+      "defending": {
+        "value": 80,
+        "cost": 3
+      },
+      "passing": {
+        "value": 81,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S43",
+    "character": "Reo Mikage",
+    "name": "Reo Mikage ( BARCHA VS CITY )",
+    "rarity": "S",
+    "position": "Midfielder",
+    "stamina": 23,
+    "stats": {
+      "shooting": {
+        "value": 89,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 85,
+        "cost": 3
+      },
+      "speed": {
+        "value": 86,
+        "cost": 3
+      },
+      "defending": {
+        "value": 89,
+        "cost": 4
+      },
+      "passing": {
+        "value": 87,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "S44",
+    "character": "Chigiri Hyoma",
+    "name": "Chigiri Hyoma ( BARCHA VS CITY )",
+    "rarity": "S",
+    "position": "Striker",
+    "stamina": 20,
+    "stats": {
+      "shooting": {
+        "value": 87,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 84,
+        "cost": 4
+      },
+      "speed": {
+        "value": 92,
+        "cost": 3
+      },
+      "defending": {
+        "value": 84,
+        "cost": 4
+      },
+      "passing": {
+        "value": 85,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS01",
+    "character": "Julian Loki",
+    "name": "Julian Loki (2ND SEL)",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 23,
+    "stats": {
+      "shooting": {
+        "value": 94,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 94,
+        "cost": 4
+      },
+      "speed": {
+        "value": 96,
+        "cost": 4
+      },
+      "defending": {
+        "value": 92,
+        "cost": 3
+      },
+      "passing": {
+        "value": 90,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS02",
+    "character": "Dada Silva",
+    "name": "Dada Silva (2ND SEL)",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 23,
+    "stats": {
+      "shooting": {
+        "value": 95,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 94,
+        "cost": 4
+      },
+      "speed": {
+        "value": 93,
+        "cost": 4
+      },
+      "defending": {
+        "value": 96,
+        "cost": 4
+      },
+      "passing": {
+        "value": 91,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS03",
+    "character": "Leonardo Luna",
+    "name": "Leonardo Luna (2ND SEL)",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 25,
+    "stats": {
+      "shooting": {
+        "value": 96,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 96,
+        "cost": 4
+      },
+      "speed": {
+        "value": 93,
+        "cost": 4
+      },
+      "defending": {
+        "value": 93,
+        "cost": 3
+      },
+      "passing": {
+        "value": 94,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS04",
+    "character": "Pablo Cavasoz",
+    "name": "Pablo Cavasoz (2ND SEL)",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 23,
+    "stats": {
+      "shooting": {
+        "value": 95,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 95,
+        "cost": 4
+      },
+      "speed": {
+        "value": 94,
+        "cost": 4
+      },
+      "defending": {
+        "value": 92,
+        "cost": 3
+      },
+      "passing": {
+        "value": 96,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS05",
+    "character": "Adam Blake",
+    "name": "Adam Blake (2ND SEL)",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 27,
+    "stats": {
+      "shooting": {
+        "value": 96,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 95,
+        "cost": 4
+      },
+      "speed": {
+        "value": 93,
+        "cost": 4
+      },
+      "defending": {
+        "value": 94,
+        "cost": 3
+      },
+      "passing": {
+        "value": 92,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS06",
+    "character": "Noel Noa",
+    "name": "Noel Noa ( NEL )",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 27,
+    "stats": {
+      "shooting": {
+        "value": 98,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 96,
+        "cost": 4
+      },
+      "speed": {
+        "value": 94,
+        "cost": 3
+      },
+      "defending": {
+        "value": 93,
+        "cost": 3
+      },
+      "passing": {
+        "value": 96,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS07",
+    "character": "Lavinho",
+    "name": "Lavinho ( NEL )",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 25,
+    "stats": {
+      "shooting": {
+        "value": 95,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 98,
+        "cost": 4
+      },
+      "speed": {
+        "value": 94,
+        "cost": 3
+      },
+      "defending": {
+        "value": 90,
+        "cost": 3
+      },
+      "passing": {
+        "value": 92,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS08",
+    "character": "Chris Prince",
+    "name": "Chris Prince ( NEL )",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 28,
+    "stats": {
+      "shooting": {
+        "value": 97,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 95,
+        "cost": 4
+      },
+      "speed": {
+        "value": 94,
+        "cost": 3
+      },
+      "defending": {
+        "value": 94,
+        "cost": 3
+      },
+      "passing": {
+        "value": 94,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS09",
+    "character": "Marc Snuffy",
+    "name": "Marc Snuffy ( NEL )",
+    "rarity": "SS",
+    "position": "Midfielder",
+    "stamina": 26,
+    "stats": {
+      "shooting": {
+        "value": 97,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 94,
+        "cost": 4
+      },
+      "speed": {
+        "value": 95,
+        "cost": 4
+      },
+      "defending": {
+        "value": 94,
+        "cost": 3
+      },
+      "passing": {
+        "value": 96,
+        "cost": 3
+      }
+    }
+  },
+  {
+    "cardId": "SS10",
+    "character": "Julian Loki",
+    "name": "Julian Loki ( NEL )",
+    "rarity": "SS",
+    "position": "Striker",
+    "stamina": 25,
+    "stats": {
+      "shooting": {
+        "value": 96,
+        "cost": 4
+      },
+      "dribbling": {
+        "value": 95,
+        "cost": 4
+      },
+      "speed": {
+        "value": 98,
+        "cost": 4
+      },
+      "defending": {
+        "value": 94,
+        "cost": 3
+      },
+      "passing": {
+        "value": 94,
+        "cost": 3
+      }
+    }
+  }
+]

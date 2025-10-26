@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3v3 Game Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .unit {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+    .P1 { background-color: #1E3A8A; } /* blue */
+    .P2 { background-color: #DC2626; } /* red */
+  </style>
+  <script type="module" crossorigin src="/assets/index-CODDat6F.js"></script>
+</head>
+<body class="bg-gray-800 flex justify-center items-center min-h-screen">
+  <div id="board-container" class="relative w-[1200px] h-[500px]">
+    <img src="./board.jpg" alt="Board" class="w-full h-full object-cover">
+    <div id="units-container" class="absolute top-0 left-0 w-full h-full"></div>
+  </div>
+</body>
+</html>
