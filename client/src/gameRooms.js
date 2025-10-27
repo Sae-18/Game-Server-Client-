@@ -3,7 +3,7 @@ import { units, spawnUnitFromCard, resetUnits } from './engine/unit.js';
 import { MultiplayerSync } from './socketManager.js';
 
 // ⚠️ IMPORTANT: Change this based on your environment
-const SERVER_URL = 'http://localhost:3000';
+const SERVER_URL = 'https://game-server-production-b429.up.railway.app';
 
 console.log('🔌 Will connect to server:', SERVER_URL);
 
@@ -13,8 +13,8 @@ let localPlayerRole = null;
 let roomCode = null;
 let isJoining = false;
 let isCreating = false;
-const P1_CARDS = Object.freeze(['S22', 'S35', 'S41']);
-const P2_CARDS = Object.freeze(['S26', 'S31', 'S43']);
+const P1_CARDS = Object.freeze(['S01', 'S35', 'S41']);
+const P2_CARDS = Object.freeze(['S08', 'S31', 'S43']);
 let lastBattleContext = null;
 
 
@@ -703,6 +703,7 @@ function onGameStateChange(data) {
 
   renderUnits();
   updateScoreboard();
+  checkAndLockDepletedUnits();
 
   if (game.state === 'inProgress' && !game.pendingBattle) {
     const scorer = checkForAutoGoal();
@@ -1088,6 +1089,29 @@ function renderUnits() {
     });
   });
   renderStaminaBars();
+}
+
+// Add this function anywhere in gameRooms.js (after renderStaminaBars is good)
+function checkAndLockDepletedUnits() {
+  let anyLocked = false;
+
+  for (const unit of units.values()) {
+    // If stamina is 0 or below and unit isn't already permanently locked
+    if (unit.stamina <= 0 && !unit.permanentlyLocked) {
+      console.log(`🔒 PERMANENT LOCK: ${unit.name} (${unit.ownerId}) depleted stamina`);
+      unit.permanentlyLocked = true;
+      unit.lockTurns = 999; // Effectively infinite
+      unit.stamina = 0; // Ensure it's exactly 0
+      anyLocked = true;
+    }
+  }
+
+  if (anyLocked) {
+    renderUnits();
+    renderStaminaBars();
+  }
+
+  return anyLocked;
 }
 
 function renderStaminaBars() {
@@ -2098,6 +2122,67 @@ async function executeAction(unitId, action, target) {
   clearSelection();
 }
 
+// Add this function near handleGoal()
+function checkMatchEnd() {
+  if (!game) return false;
+
+  const winningScore = 3;
+  let winner = null;
+
+  if (game.score.P1 >= winningScore) {
+    winner = 'P1';
+  } else if (game.score.P2 >= winningScore) {
+    winner = 'P2';
+  }
+
+  if (winner) {
+    console.log(`🏆 MATCH END! ${winner} wins ${game.score.P1}-${game.score.P2}`);
+    game.state = 'finished';
+
+    // Show victory screen
+    showMatchEndScreen(winner);
+    return true;
+  }
+
+  return false;
+}
+
+// Add this function to show the victory screen
+function showMatchEndScreen(winner) {
+  // Remove any existing screens
+  const existing = document.getElementById('match-end-container');
+  if (existing) existing.remove();
+
+  const container = document.createElement('div');
+  container.id = 'match-end-container';
+  container.className = 'fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-[10000]';
+
+  const trophy = document.createElement('div');
+  trophy.className = 'text-8xl mb-6 animate-bounce';
+  trophy.textContent = '🏆';
+  container.appendChild(trophy);
+
+  const winnerText = document.createElement('h1');
+  winnerText.className = 'text-white text-6xl font-bold mb-4';
+  winnerText.textContent = `${winner} WINS!`;
+  container.appendChild(winnerText);
+
+  const scoreText = document.createElement('p');
+  scoreText.className = 'text-white text-3xl mb-8';
+  scoreText.textContent = `Final Score: ${game.score.P1} - ${game.score.P2}`;
+  container.appendChild(scoreText);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Close';
+  closeBtn.className = 'px-8 py-3 rounded bg-blue-700 text-white font-bold hover:bg-blue-600 text-2xl';
+  closeBtn.addEventListener('click', () => {
+    document.body.removeChild(container);
+    window.location.reload();
+  });
+  container.appendChild(closeBtn);
+
+  document.body.appendChild(container);
+}
 
 // ...existing code...
 async function handleGoal() {
@@ -2178,6 +2263,10 @@ async function handleGoal() {
   await mpSync.pushToServer();
   renderUnits();
   updateScoreboard();
+
+  if (checkMatchEnd()) {
+    return; // Match is over, don't continue
+  }
 }
 
 // ...existing code...
