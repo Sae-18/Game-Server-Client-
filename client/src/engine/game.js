@@ -62,22 +62,58 @@ class GameManager {
         }
         if (this.state !== "inProgress")
             return { result: "game over" };
+
         const moved = moveIfAllowed(unitId, fromId, toId, this.turnManager, action);
         if (!moved)
             return { result: "illegal", reason: "cannot move" };
+
         // Pending battle handling
         if (moved.result === 'battle pending') {
             const m = moved;
-            this.pendingBattle = {
-                attackerId: m.attacker,
-                defenderId: m.defender,
-                nodeId: m.nodeId, // now defined correctly
-            };
-            console.log(`⚔️ Battle pending (${m.type}) between ${m.attacker} and ${m.defender} at node ${m.nodeId}`);
-            // DO NOT advance the turn yet
-            return { result: 'battle pending', attacker: m.attacker, defender: m.defender, nodeId: m.nodeId, type: m.type };
+
+            // âœ… Handle both 1v1 and 2v1
+            if (m.is2v1) {
+                // 2v1 Battle
+                this.pendingBattle = {
+                    attackerId: m.attacker,
+                    defenderIds: m.defenders,  // âœ… Array of defenders
+                    nodeId: m.nodeId,
+                    is2v1: true
+                };
+                console.log(`âš”ï¸âš”ï¸ 2v1 Battle pending (${m.type}) between ${m.attacker} and [${m.defenders.join(', ')}] at node ${m.nodeId}`);
+
+                // DO NOT advance the turn yet
+                return {
+                    result: 'battle pending',
+                    attacker: m.attacker,
+                    defenders: m.defenders,  // âœ… Return array
+                    nodeId: m.nodeId,
+                    type: m.type,
+                    is2v1: true
+                };
+            } else {
+                // 1v1 Battle
+                this.pendingBattle = {
+                    attackerId: m.attacker,
+                    defenderId: m.defender,  // âœ… Single defender
+                    nodeId: m.nodeId,
+                    is2v1: false
+                };
+                console.log(`âš”ï¸ 1v1 Battle pending (${m.type}) between ${m.attacker} and ${m.defender} at node ${m.nodeId}`);
+
+                // DO NOT advance the turn yet
+                return {
+                    result: 'battle pending',
+                    attacker: m.attacker,
+                    defender: m.defender,  // âœ… Return single
+                    nodeId: m.nodeId,
+                    type: m.type,
+                    is2v1: false
+                };
+            }
         }
-        // Normal move finished → advance turn
+
+        // Normal move finished â†’ advance turn
         this.turnManager.nextTurn();
         return { result: "moved", unit: unitId, to: toId };
     }
@@ -128,8 +164,8 @@ class GameManager {
                 defenderId: r.defender,
                 nodeId: r.nodeId,
             };
-            console.log(`⚔️ Battle pending between ${r.attacker} and ${r.defender} at node ${r.nodeId}`);
-            // Waiting for player input — do NOT nextTurn()
+            console.log(`âš”ï¸ Battle pending between ${r.attacker} and ${r.defender} at node ${r.nodeId}`);
+            // Waiting for player input â€” do NOT nextTurn()
             return { result: 'battle pending', attacker: r.attacker, defender: r.defender, nodeId: r.nodeId };
         }
         // check if a goal was scored
@@ -139,19 +175,71 @@ class GameManager {
                 return { result: "game over", winner: this.turnManager.currentPlayer };
             }
         }
-        // Normal non-battle action → advance turn
+        // Normal non-battle action â†’ advance turn
         // this.turnMa nager.nextTurn();
         return result;
     }
 
-    determineBattleType(action, attackerId, defenderId) {
+    determineBattleType(action, attackerId, defenderIdOrIds) {
         const attacker = getUnitInstance(attackerId);
-        const defender = getUnitInstance(defenderId);
-        if (!attacker || !defender) return null;
+        if (!attacker) return null;
 
         const attackerCard = cardMap.get(attacker.cardId);
+        if (!attackerCard) return null;
+
+        // âœ… Check if it's 2v1 (defenderIdOrIds is an array)
+        if (Array.isArray(defenderIdOrIds)) {
+            // 2v1 Battle
+            const defender1 = getUnitInstance(defenderIdOrIds[0]);
+            const defender2 = getUnitInstance(defenderIdOrIds[1]);
+
+            if (!defender1 || !defender2) return null;
+
+            const def1Card = cardMap.get(defender1.cardId);
+            const def2Card = cardMap.get(defender2.cardId);
+
+            if (!def1Card || !def2Card) return null;
+
+            let attackValue = 0;
+            let defenseValue = 0;
+
+            // Solo attacker gets 1.95x multiplier
+            switch (action) {
+                case "dribble":
+                    attackValue = ((attackerCard.stats.dribbling?.value || 0) + (attackerCard.stats.speed?.value || 0)) * 1.95;
+                    defenseValue = (def1Card.stats.defending?.value || 0) + (def1Card.stats.speed?.value || 0) +
+                        (def2Card.stats.defending?.value || 0) + (def2Card.stats.speed?.value || 0);
+                    break;
+                case "pass":
+                    attackValue = ((attackerCard.stats.passing?.value || 0) + (attackerCard.stats.speed?.value || 0)) * 1.95;
+                    defenseValue = (def1Card.stats.speed?.value || 0) + (def2Card.stats.speed?.value || 0);
+                    break;
+                case "shoot":
+                    attackValue = ((attackerCard.stats.shooting?.value || 0) + (attackerCard.stats.speed?.value || 0)) * 1.95;
+                    defenseValue = (def1Card.stats.defending?.value || 0) + (def1Card.stats.speed?.value || 0) +
+                        (def2Card.stats.defending?.value || 0) + (def2Card.stats.speed?.value || 0);
+                    break;
+            }
+
+            const diff = attackValue - defenseValue;
+
+            // Threshold is 10 for 2v1 battles
+            if (Math.abs(diff) > 10) {
+                const winner = diff > 0 ? attackerId : 'defenders';
+                return { type: 'clear', winner: winner, is2v1: true };
+            } else {
+                return { type: 'die_roll', is2v1: true };
+            }
+        }
+
+        // âœ… 1v1 Battle (existing logic)
+        const defenderId = defenderIdOrIds;
+        const defender = getUnitInstance(defenderId);
+
+        if (!defender) return null;
+
         const defenderCard = cardMap.get(defender.cardId);
-        if (!attackerCard || !defenderCard) return null;
+        if (!defenderCard) return null;
 
         let attackValue = 0;
         let defenseValue = 0;
@@ -177,10 +265,10 @@ class GameManager {
         if (Math.abs(diff) > 5) {
             // It's a clear victory, no die roll needed
             const winner = diff > 0 ? attackerId : defenderId;
-            return { type: 'clear', winner: winner };
+            return { type: 'clear', winner: winner, is2v1: false };
         } else {
             // The stat difference is small, a die roll is required
-            return { type: 'die_roll' };
+            return { type: 'die_roll', is2v1: false };
         }
     }
     getSerializableState() {
@@ -213,8 +301,8 @@ class GameManager {
     }
     goalScored(playerId) {
         this.score[playerId]++;
-        console.log(`⚽ Goal! ${playerId} scores. Current score:`, this.score);
-        // reset ball to that player’s GK (node 1 for P1, node 12 for P2)
+        console.log(`âš½ Goal! ${playerId} scores. Current score:`, this.score);
+        // reset ball to that playerâ€™s GK (node 1 for P1, node 12 for P2)
         const goalNode = playerId === "P1" ? 1 : 12;
         for (const u of units.values()) {
             u.hasBall = false;
@@ -233,7 +321,7 @@ class GameManager {
     checkWinCondition() {
         if (this.score.P1 >= this.maxGoals || this.score.P2 >= this.maxGoals) {
             this.state = "finished";
-            console.log("🏆 Game over! Winner:", this.score.P1 > this.score.P2 ? "P1" : "P2");
+            console.log("ðŸ† Game over! Winner:", this.score.P1 > this.score.P2 ? "P1" : "P2");
             return true;
         }
         return false;
@@ -248,7 +336,7 @@ class GameManager {
     // This is the fixed resolvePendingBattle method that should replace the existing one in game.js
 
 
-    resolvePending2v1Battle(action, targetNodeId) {
+    resolvePending2v1Battle(action, targetNodeId, manualRolls = null) {
         if (!this.pendingBattle || !this.pendingBattle.is2v1) {
             return { result: 'illegal', reason: 'no pending 2v1 battle' };
         }
@@ -256,7 +344,7 @@ class GameManager {
         const { attackerId, defenderIds, nodeId } = this.pendingBattle;
 
         // Resolve the 2v1 battle
-        const result = resolve2v1(attackerId, defenderIds, action, this.turnManager, targetNodeId);
+        const result = resolve2v1(attackerId, defenderIds, action, this.turnManager, targetNodeId, manualRolls);
         if (!result) return false;
 
         const attacker = units.get(attackerId);
@@ -352,7 +440,7 @@ class GameManager {
         if (!result) return false;
 
 
-         const winnerUnit = getUnitInstance(result.winner);
+        const winnerUnit = getUnitInstance(result.winner);
         const effects = result.postEffects || {};
 
         // Handle node updates based on action

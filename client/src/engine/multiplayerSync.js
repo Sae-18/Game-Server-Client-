@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,8 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { units } from './unit';
-export class MultiplayerSync {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MultiplayerSync = void 0;
+const unit_1 = require("./unit");
+class MultiplayerSync {
     constructor(roomCode, localPlayerRole, game, onStateChange) {
         this.isProcessingUpdate = false;
         this.roomCode = roomCode;
@@ -69,7 +72,7 @@ export class MultiplayerSync {
     // Sync units from Firestore representation
     syncUnits(firestoreUnits) {
         // Clear current units
-        units.clear();
+        unit_1.units.clear();
         // Rebuild units map from Firestore
         firestoreUnits.forEach((u) => {
             const unit = {
@@ -84,7 +87,7 @@ export class MultiplayerSync {
                 stats: u.stats,
                 rarity: u.rarity
             };
-            units.set(u.id, unit);
+            unit_1.units.set(u.id, unit);
         });
     }
     // Push local game state TO Firestore
@@ -96,7 +99,7 @@ export class MultiplayerSync {
             try {
                 const roomRef = doc(db, "rooms", this.roomCode);
                 // Serialize units
-                const unitsArray = Array.from(units.values()).map(u => ({
+                const unitsArray = Array.from(unit_1.units.values()).map(u => ({
                     id: u.id,
                     cardId: u.cardId,
                     name: u.name,
@@ -133,7 +136,8 @@ export class MultiplayerSync {
     }
     // Check if a unit belongs to this player
     isMyUnit(unitId) {
-        const unit = units.get(unitId);
+        const unit = unit_1.units.get(unitId);
         return (unit === null || unit === void 0 ? void 0 : unit.ownerId) === this.localPlayerRole;
     }
 }
+exports.MultiplayerSync = MultiplayerSync;

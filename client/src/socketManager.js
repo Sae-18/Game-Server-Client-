@@ -17,7 +17,7 @@ export class MultiplayerSync {
   connect(serverUrl) {
     return new Promise((resolve, reject) => {
       console.log('🔌 Attempting to connect to:', serverUrl);
-      
+
       this.socket = io(serverUrl, {
         reconnection: true,
         reconnectionDelay: 1000,
@@ -109,7 +109,7 @@ export class MultiplayerSync {
       console.log("⸻ Skipping sync - battle in progress");
       return;
     }
-    
+
     console.log("🔄 Syncing from server...", {
       kickoffChosen: data.kickoffChosen,
       hasUnits: data.gameState?.units?.length > 0,
@@ -251,13 +251,35 @@ export class MultiplayerSync {
       });
 
       let pendingBattleData = null;
+
+      // ✅ Only include pendingBattle if there's one actively ongoing
       if (this.game.pendingBattle) {
-        pendingBattleData = {
-          attackerId: this.game.pendingBattle.attackerId,
-          defenderId: this.game.pendingBattle.defenderId,
-          nodeId: this.game.pendingBattle.nodeId || null
-        };
-        console.log("⚔️ Pushing battle to server:", pendingBattleData);
+        const pb = this.game.pendingBattle;
+        const is2v1 = pb.is2v1 || (Array.isArray(pb.defenderIds) && pb.defenderIds.length === 2);
+
+        if (is2v1) {
+          pendingBattleData = {
+            attackerId: pb.attackerId,
+            defenderIds: pb.defenderIds ?? [],
+            nodeId: pb.nodeId ?? null,
+            is2v1: true,
+            initiator: pb.initiator ?? this.game.turnManager.currentPlayer
+          };
+        } else {
+          pendingBattleData = {
+            attackerId: pb.attackerId,
+            defenderId: pb.defenderId ?? null,
+            nodeId: pb.nodeId ?? null,
+            is2v1: false,
+            initiator: pb.initiator ?? this.game.turnManager.currentPlayer
+          };
+        }
+      } else {
+        // ❌ Don’t override the server’s battle state mid-fight
+        if (this.game.state === 'battle') {
+          console.log('⚠️ Skipping pendingBattle reset - battle in progress');
+          pendingBattleData = undefined; // <-- key part
+        }
       }
 
       this.socket.emit('updateGameState', {

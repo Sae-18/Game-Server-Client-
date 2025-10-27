@@ -119,9 +119,34 @@ io.on('connection', (socket) => {
     if (data.state !== undefined) room.state = data.state;
     if (data.gameState) {
       if (data.gameState.units) room.gameState.units = data.gameState.units;
+
+      // ✅ HANDLE BOTH 1v1 AND 2v1 PENDING BATTLES
       if (data.gameState.pendingBattle !== undefined) {
-        room.gameState.pendingBattle = data.gameState.pendingBattle;
+        const battle = data.gameState.pendingBattle;
+
+        // ❌ Only allow clearing IF explicitly finalized server-side
+        if (battle === null && !room.gameState.battleFinalizing) {
+          console.log(`⚠️ Ignoring client attempt to clear battle (room: ${roomCode})`);
+        }
+        else if (battle !== null) {
+          // Store new pending battle
+          room.gameState.pendingBattle = {
+            attackerId: battle.attackerId,
+            nodeId: battle.nodeId,
+            is2v1: battle.is2v1 || false,
+            initiator: battle.initiator || null
+          };
+          if (battle.is2v1 && battle.defenderIds) {
+            room.gameState.pendingBattle.defenderIds = battle.defenderIds;
+            console.log(`⚔️⚔️ 2v1 Battle stored: ${battle.attackerId} vs [${battle.defenderIds.join(', ')}]`);
+          } else if (battle.defenderId) {
+            room.gameState.pendingBattle.defenderId = battle.defenderId;
+            console.log(`⚔️ 1v1 Battle stored: ${battle.attackerId} vs ${battle.defenderId}`);
+          }
+        }
       }
+
+
       if (data.gameState.battleRolls) {
         room.gameState.battleRolls = {
           ...room.gameState.battleRolls,
@@ -180,13 +205,17 @@ io.on('connection', (socket) => {
     const room = rooms.get(roomCode);
     if (!room) return;
 
+    const is2v1 = room.gameState.pendingBattle?.is2v1 || false;
+
     // Update the roll for the attacker or defender
     if (role === 'attacker') {
       room.gameState.battleRolls.attacker = roll;
       room.gameState.battleRolls.attackerReady = true;
+      console.log(`🎲 Attacker rolled ${roll} in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
     } else {
       room.gameState.battleRolls.defender = roll;
       room.gameState.battleRolls.defenderReady = true;
+      console.log(`🎲 Defender(s) rolled ${roll} in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
     }
 
     // Emit the updated game state to all clients in the room
@@ -197,7 +226,7 @@ io.on('connection', (socket) => {
       // Give clients a short delay to re-render before prompting
       setTimeout(() => {
         io.to(roomCode).emit('promptDefenderRoll');
-        console.log(`🛡️ Prompting defender to roll in room: ${roomCode}`);
+        console.log(`🛡️ Prompting defender(s) to roll in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
       }, 500);
     }
   });
@@ -207,6 +236,10 @@ io.on('connection', (socket) => {
     const { roomCode, result } = data;
     const room = rooms.get(roomCode);
     if (!room) return;
+
+    room.gameState.battleFinalizing = true;
+
+    const is2v1 = result.is2v1 || false;
 
     // Reset battle state on server
     room.gameState.pendingBattle = null;
@@ -219,21 +252,22 @@ io.on('connection', (socket) => {
       defenderReady: false
     };
 
-    console.log(`🏁 Battle finalized in room ${roomCode}. Winner: ${result.winner}`);
+    console.log(`🏁 ${is2v1 ? '2v1' : '1v1'} Battle finalized in room ${roomCode}. Winner: ${result.winner}`);
 
     // Broadcast battle resolution to everyone in the room
     io.to(roomCode).emit('battleResolved', {
       winner: result.winner,
       loser: result.loser,
       rolls: result.rolls,
-      action: result.action
+      action: result.action,
+      is2v1: is2v1  // ✅ Include battle type
     });
 
     // Also push updated game state
     io.to(roomCode).emit('gameStateUpdate', room);
+
+      room.gameState.battleFinalizing = false; 
   });
-
-
 
   // CLEAR BATTLE
   socket.on('clearBattle', (roomCode) => {
@@ -251,6 +285,7 @@ io.on('connection', (socket) => {
     };
 
     io.to(roomCode).emit('gameStateUpdate', room);
+    console.log(`🧹 Battle cleared in room ${roomCode}`);
   });
 
   // DISCONNECT

@@ -1,6 +1,7 @@
 {
   "name": "egokai-tcg-server",
   "version": "1.0.0",
+  "type" : "module",
   "description": "Socket.io server for EGOKAI TCG multiplayer game",
   "main": "server.js",
   "scripts": {
