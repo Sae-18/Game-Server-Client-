@@ -2,6 +2,30 @@ import { GameManager } from './engine/game.js';
 import { units, spawnUnitFromCard, resetUnits } from './engine/unit.js';
 import { MultiplayerSync } from './socketManager.js';
 
+// Add this function near the top of gameRooms.js, after the imports
+function setupBattleResultListener() {
+  if (!mpSync || !mpSync.socket) return;
+
+  // Remove any existing listener
+  mpSync.socket.off('battleResolved');
+
+  // Listen for battle results from server
+  mpSync.socket.on('battleResolved', (data) => {
+    console.log('🔔 Received battle result:', data);
+
+    // Show the winner to this client
+    if (data.winnerId) {
+      const winnerUnit = units.get(data.winnerId);
+      if (winnerUnit) {
+        showBattleWinner(data.winnerId, data.action);
+      } else if (data.winner === 'defenders') {
+        // For 2v1 when defenders win
+        showBattleWinner(data.winner, data.action);
+      }
+    }
+  });
+}
+
 // ⚠️ IMPORTANT: Change this based on your environment
 const SERVER_URL = 'https://game-server-production-b429.up.railway.app';
 
@@ -116,6 +140,7 @@ function initializeGameForCreator() {
 
   // ✅ Setup battle resolved listener
   setupBattleResolvedListener();
+  setupBattleResultListener();
 
   const roomUpdateListener = (data) => {
     if (data.players.P1 && data.players.P2 && data.state === 'inProgress') {
@@ -436,6 +461,7 @@ async function initializeGame(code, initialData) {
   }
 
   // ✅ Setup battle resolved listener
+  setupBattleResultListener();
   setupBattleResolvedListener();
 }
 
@@ -1012,84 +1038,101 @@ function renderEdges(edges, nodes) {
 
 function renderUnits() {
   unitsContainer.innerHTML = '';
-
   getUnitsPerNode().forEach((nodeUnits, nodeId) => {
     const coord = nodeCoordinates.get(nodeId);
     if (!coord) return;
     const center = getPixelPosition(coord.xPercent, coord.yPercent, unitsContainer);
-    const n = nodeUnits.length;
-    const radius = Math.min(60, 25 + (n - 2) * 15);
-    const offsetRadius = n === 1 ? 0 : radius;
+    const p1Units = nodeUnits.filter(u => u.ownerId === 'P1');
+    const p2Units = nodeUnits.filter(u => u.ownerId === 'P2');
 
-    nodeUnits.forEach((unit, index) => {
-      const angle = (2 * Math.PI * index) / n;
-      const dx = Math.cos(angle) * offsetRadius;
-      const dy = Math.sin(angle) * offsetRadius;
-      const u = document.createElement('div');
-      u.className = 'unit-token absolute flex items-center justify-center cursor-pointer';
+    const renderRow = (unitsList, verticalOffset) => {
+      const n = unitsList.length;
+      const spacing = 70;
+      const totalWidth = (n - 1) * spacing;
+      const startX = center.x - totalWidth / 2;
 
-      u.style.cssText = `left:${Math.round(center.x + dx)}px;top:${Math.round(center.y + dy)}px;transform:translate(-50%,-50%)`;
+      unitsList.forEach((unit, index) => {
+        const x = startX + (index * spacing);
+        const y = center.y + verticalOffset;
+        const u = document.createElement('div');
+        u.className = 'unit-token absolute cursor-pointer';
+        const rotation = unit.ownerId === 'P1' ? 'rotate(-90deg)' : 'rotate(90deg)';
+        u.style.cssText = `left:${Math.round(x)}px; top:${Math.round(y)}px; transform:translate(-50%,-50%) ${rotation}`;
 
-      const img = document.createElement('img');
-      img.src = `/cards/${unit.rarity}/${unit.cardId}.png`;
-      img.className = 'w-16 h-20 sm:w-20 sm:h-28 md:w-32 md:h-44 lg:w-48 lg:h-60 object-contain';
-      img.style.cssText = 'image-rendering:pixelated;position:relative';
+        const img = document.createElement('img');
+        img.src = `/cards/${unit.rarity}/${unit.cardId}.png`;
+        img.className = `
+          w-16 h-20 sm:w-20 sm:h-28 md:w-32 md:h-44 lg:w-48 lg:h-60 
+          object-contain relative rounded-lg border-4
+        `;
+        img.style.imageRendering = 'pixelated';
+        img.style.borderRadius = '10px';
 
-      if (unit.hasBall) {
-        const ballImg = document.createElement('img');
-        ballImg.src = '/ball.png';
-        ballImg.className = 'absolute right-0 bottom-0 w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 z-[100]';
-        u.appendChild(ballImg);
-      }
+        // Border colors
+        if (unit.hasBall) {
+          img.style.borderColor = '#00ae09ff'; // green
+        } else if (unit.ownerId === 'P1') {
+          img.style.borderColor = '#1c71d8'; // blue
+        } else {
+          img.style.borderColor = '#ed333b'; // red
+        }
 
-      u.style.background = unit.hasBall ? '#f59e0b' : (unit.ownerId === 'P1' ? '#1e40af' : '#dc2626');
-      if (unit.id === selectedUnitId) u.style.boxShadow = '0 0 0 6px rgba(245,158,11,0.95)';
+        // Dim locked units
+        if (unit.lockTurns > 0) {
+          img.style.opacity = '0.5';
+          img.style.filter = 'grayscale(20%)'; // optional: subtle desaturation for clarity
+        } else {
+          img.style.opacity = '1';
+          img.style.filter = 'none';
+        }
 
-      u.appendChild(img);
-      u.dataset.unitId = unit.id;
-      u.addEventListener('click', (ev) => {
-        ev.stopPropagation();
+        // Selected unit highlight
+        if (unit.id === selectedUnitId) {
+          img.style.boxShadow = '0 0 0 4px rgba(245,194,17,0.8)';
+        }
 
-        console.log('👆 Unit clicked:', {
-          unitId: unit.id,
-          ownerId: unit.ownerId,
-          gameState: game.state,
-          actionMode,
-          selectedUnitId,
-          hasBall: unit.hasBall
+        u.appendChild(img);
+
+        // Ball overlay
+        if (unit.hasBall) {
+          const ballImg = document.createElement('img');
+          ballImg.src = '/ball.png';
+          ballImg.className = 'absolute right-0 bottom-0 w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 z-[1000] pointer-events-none';
+          u.appendChild(ballImg);
+        }
+
+        // Click handler
+        u.dataset.unitId = unit.id;
+        u.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          if (game.state === 'coinToss') return;
+          if (!mpSync || !mpSync.isMyTurn()) return;
+
+          if (actionMode === 'pass' && selectedUnitId) {
+            const origin = getUnitInstance(selectedUnitId); // Use getUnitInstance instead
+            if (unit.ownerId === origin.ownerId && unit.id !== origin.id) {
+              doPass(selectedUnitId, unit.position);
+            }
+            return;
+          }
+
+          selectUnit(unit.id);
         });
 
-        if (game.state === 'coinToss') {
-          console.log('⚠️ Still in coin toss state');
-          return;
-        }
-
-        if (!mpSync) {
-          console.log('⚠️ No multiplayer sync');
-          return;
-        }
-
-        if (!mpSync.isMyTurn()) {
-          console.log('⚠️ Not your turn (unit click)');
-          return;
-        }
-
-        if (actionMode === 'pass' && selectedUnitId) {
-          const origin = units.get(selectedUnitId);
-          if (unit.ownerId === origin.ownerId && unit.id !== origin.id) {
-            console.log('✅ Passing to teammate');
-            doPass(selectedUnitId, unit.position);
-          }
-          return;
-        }
-
-        selectUnit(unit.id);
+        unitsContainer.appendChild(u);
       });
-      unitsContainer.appendChild(u);
-    });
+    };
+
+    if (p1Units.length > 0) renderRow(p1Units, +40);
+    if (p2Units.length > 0) renderRow(p2Units, -40);
   });
+
   renderStaminaBars();
 }
+
+
+
+
 
 // Add this function anywhere in gameRooms.js (after renderStaminaBars is good)
 function checkAndLockDepletedUnits() {
@@ -1596,32 +1639,23 @@ async function resolveBattle(action) {
     console.log("🏆 Battle resolved - Winner:", result.winner);
 
     // ✅ SET TURN TO WINNER
-    // For 2v1, winner might be 'defenders' (string), need to handle that
-    if (result.winner === 'defenders') {
-      // Defenders won - turn goes to defending team
-      const defenderIds = is2v1Battle ? game.pendingBattle.defenderIds : [game.pendingBattle.defenderId];
-      const firstDefender = units.get(defenderIds[0]);
-      if (firstDefender) {
-        game.turnManager.currentPlayer = firstDefender.ownerId;
-        console.log(`✅ Turn awarded to defending team: ${firstDefender.ownerId}`);
-        console.log('⚽ Defenders won 2v1, prompting ball recipient choice');
-        const defenderIds = game.pendingBattle ?
-          game.pendingBattle.defenderIds :
-          result.postEffects.defenderIds;
+    // if (result.winner === 'defenders') {
+    //   const defenderIds = is2v1Battle ? game.pendingBattle.defenderIds : [game.pendingBattle.defenderId];
+    //   const firstDefender = units.get(defenderIds[0]);
+    //   if (firstDefender) {
+    //     game.turnManager.currentPlayer = firstDefender.ownerId;
+    //     console.log(`✅ Turn awarded to defending team: ${firstDefender.ownerId}`);
+    //   }
+    // } else {
+    //   const winnerUnit = units.get(result.winner);
+    //   if (winnerUnit) {
+    //     game.turnManager.currentPlayer = winnerUnit.ownerId;
+    //     console.log(`✅ Turn awarded to battle winner: ${winnerUnit.ownerId}`);
+    //   }
+    // }
 
-        if (defenderIds && defenderIds.length === 2) {
-          promptBallRecipientChoice(defenderIds);
-          // Exit early, don't check for new battles yet
-        }
-      }
-    } else {
-      const winnerUnit = units.get(result.winner);
-      if (winnerUnit) {
-        game.turnManager.currentPlayer = winnerUnit.ownerId;
-        console.log(`✅ Turn awarded to battle winner: ${winnerUnit.ownerId}`);
-      }
-    }
-
+    // ✅ IMPORTANT: Show winner BEFORE clearing battle state
+    // This ensures both clients can see who won
     showBattleWinner(result.winner, result.action);
 
     // Clear local battle state
@@ -1634,24 +1668,23 @@ async function resolveBattle(action) {
     // Push to server
     await mpSync.pushToServer();
 
-    // Emit battle finalization
+    // ✅ NEW: Emit battle result with detailed info for both clients
     mpSync.socket.emit('finalizeBattle', {
       roomCode,
       result: {
         winner: result.winner,
+        winnerId: result.winner, // Unit ID
         loser: result.loser || result.losers,
         rolls: rolls,
         action: action,
-        is2v1: is2v1Battle
+        is2v1: is2v1Battle,
+        // ✅ Add winner display info
+        winnerName: units.get(result.winner)?.name || result.winner,
+        winnerOwner: units.get(result.winner)?.ownerId ||
+          (result.winner === 'defenders' ?
+            units.get(is2v1Battle ? game.pendingBattle?.defenderIds?.[0] : game.pendingBattle?.defenderId)?.ownerId :
+            null)
       }
-    });
-
-    mpSync.socket.emit('battleResolved', {
-      roomCode,
-      winner: result.winner,
-      loser: result.loser || result.losers,
-      rolls: rolls,
-      is2v1: is2v1Battle
     });
 
     // Update UI
@@ -1659,6 +1692,9 @@ async function resolveBattle(action) {
     updateScoreboard();
     clearSelection();
     renderPendingBattlePanel();
+
+    // ✅ Check for depleted units
+    checkAndLockDepletedUnits();
 
     // ✅ CHECK IF DEFENDERS WON 2v1 AND NEED TO CHOOSE BALL RECIPIENT
     if (is2v1Battle && result.winner === 'defenders' && result.postEffects?.chooseBallRecipient) {
@@ -1669,10 +1705,9 @@ async function resolveBattle(action) {
 
       if (defenderIds && defenderIds.length === 2) {
         promptBallRecipientChoice(defenderIds);
-        return; // Exit early, don't check for new battles yet
+        return;
       }
     }
-
 
     // Handle post-battle states
     if (game.state === 'postBattleMove' && result.winner === attackerId && action === 'dribble') {
@@ -2090,22 +2125,22 @@ function promptPostBattleMove(winnerId) {
     });
   }
 
-  const handleClick = async (ev) => {
-    const nodeEl = ev.target.closest('[data-node-id]');
-    if (!nodeEl) return;
-    const nodeId = Number(nodeEl.dataset.nodeId);
-    const res = game.executePostBattleMove(winnerId, nodeId);
-    if (res?.result === 'moved') {
-      const el = document.getElementById('post-battle-container');
-      if (el) document.body.removeChild(el);
-      nodesContainer.removeEventListener('click', handleClick);
-      Array.from(nodesContainer.children).forEach(n => n.style.outline = '');
-      await mpSync.pushToServer();
-      renderUnits();
-      clearSelection();
-    }
-  };
-  nodesContainer.addEventListener('click', handleClick);
+  // const handleClick = async (ev) => {
+  //   const nodeEl = ev.target.closest('[data-node-id]');
+  //   if (!nodeEl) return;
+  //   const nodeId = Number(nodeEl.dataset.nodeId);
+  //   const res = game.executePostBattleMove(winnerId, nodeId);
+  //   if (res?.result === 'moved') {
+  //     const el = document.getElementById('post-battle-container');
+  //     if (el) document.body.removeChild(el);
+  //     nodesContainer.removeEventListener('click', handleClick);
+  //     Array.from(nodesContainer.children).forEach(n => n.style.outline = '');
+  //     await mpSync.pushToServer();
+  //     renderUnits();
+  //     clearSelection();
+  //   }
+  // };
+  // nodesContainer.addEventListener('click', handleClick);
 }
 
 async function executeAction(unitId, action, target) {
@@ -2426,8 +2461,18 @@ nodesContainer.addEventListener('click', async (ev) => {
 });
 
 function showBattleWinner(winnerId, reason) {
-  const winnerUnit = units.get(winnerId);
-  if (!winnerUnit) return;
+  let winnerText = '';
+
+  if (winnerId === 'defenders') {
+    winnerText = 'Defenders win!';
+  } else {
+    const winnerUnit = units.get(winnerId);
+    if (!winnerUnit) {
+      console.warn('⚠️ Winner unit not found:', winnerId);
+      return;
+    }
+    winnerText = `${winnerUnit.name} (${winnerUnit.ownerId}) wins!`;
+  }
 
   const container = document.createElement('div');
   container.className = 'fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9998] pointer-events-none';
@@ -2435,7 +2480,7 @@ function showBattleWinner(winnerId, reason) {
   const text = document.createElement('p');
   text.className = 'text-white text-4xl font-bold text-center';
   text.style.textShadow = '3px 3px 6px rgba(0,0,0,0.7)';
-  text.textContent = `${winnerUnit.name} (${winnerUnit.ownerId}) wins!`;
+  text.textContent = winnerText;
   container.appendChild(text);
   document.body.appendChild(container);
 

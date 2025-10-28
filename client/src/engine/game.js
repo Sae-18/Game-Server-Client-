@@ -56,11 +56,11 @@ class GameManager {
         return true; // Success
     }
     moveMyUnit(unitId, fromId, toId, action = 'dribble') {
-        if (this.state === "postBattleMove") {
-            // This is a special move for the winner
-            return this.executePostBattleMove(unitId, toId);
-        }
-        if (this.state !== "inProgress")
+        // if (this.state === "postBattleMove") {
+        //     // This is a special move for the winner
+        //     return this.executePostBattleMove(unitId, toId);
+        // }
+        if (this.state !== "inProgress" && this.state !== "postBattleMove")
             return { result: "game over" };
 
         const moved = moveIfAllowed(unitId, fromId, toId, this.turnManager, action);
@@ -187,7 +187,7 @@ class GameManager {
         const attackerCard = cardMap.get(attacker.cardId);
         if (!attackerCard) return null;
 
-        // âœ… Check if it's 2v1 (defenderIdOrIds is an array)
+        // ✅ Check if it's 2v1 (defenderIdOrIds is an array)
         if (Array.isArray(defenderIdOrIds)) {
             // 2v1 Battle
             const defender1 = getUnitInstance(defenderIdOrIds[0]);
@@ -202,23 +202,57 @@ class GameManager {
 
             let attackValue = 0;
             let defenseValue = 0;
+            let atkSpeedPenalty = 0;
+            let def1SpeedPenalty = 0;
+            let def2SpeedPenalty = 0;
 
             // Solo attacker gets 1.95x multiplier
             switch (action) {
-                case "dribble":
-                    attackValue = ((attackerCard.stats.dribbling?.value || 0) + (attackerCard.stats.speed?.value || 0)) * 1.95;
-                    defenseValue = (def1Card.stats.defending?.value || 0) + (def1Card.stats.speed?.value || 0) +
-                        (def2Card.stats.defending?.value || 0) + (def2Card.stats.speed?.value || 0);
+                case "dribble": {
+                    const atkCost = Math.max(attackerCard.stats.dribbling?.cost || 0, attackerCard.stats.speed?.cost || 0);
+                    const def1Cost = Math.max(def1Card.stats.defending?.cost || 0, def1Card.stats.speed?.cost || 0);
+                    const def2Cost = Math.max(def2Card.stats.defending?.cost || 0, def2Card.stats.speed?.cost || 0);
+
+                    // Check stamina and apply penalties
+                    if (attacker.stamina < atkCost) atkSpeedPenalty = 3;
+                    if (defender1.stamina < def1Cost) def1SpeedPenalty = 3;
+                    if (defender2.stamina < def2Cost) def2SpeedPenalty = 3;
+
+                    attackValue = ((attackerCard.stats.dribbling?.value || 0) + (attackerCard.stats.speed?.value || 0) - atkSpeedPenalty) * 1.95;
+                    defenseValue = (def1Card.stats.defending?.value || 0) + (def1Card.stats.speed?.value || 0) - def1SpeedPenalty +
+                        (def2Card.stats.defending?.value || 0) + (def2Card.stats.speed?.value || 0) - def2SpeedPenalty;
                     break;
-                case "pass":
-                    attackValue = ((attackerCard.stats.passing?.value || 0) + (attackerCard.stats.speed?.value || 0)) * 1.95;
-                    defenseValue = (def1Card.stats.speed?.value || 0) + (def2Card.stats.speed?.value || 0);
+                }
+                case "pass": {
+                    const atkCost = Math.max(attackerCard.stats.passing?.cost || 0, attackerCard.stats.speed?.cost || 0);
+                    const def1Cost = def1Card.stats.speed?.cost || 0;
+                    const def2Cost = def2Card.stats.speed?.cost || 0;
+
+                    // Check stamina and apply penalties
+                    if (attacker.stamina < atkCost) atkSpeedPenalty = 3;
+                    if (defender1.stamina < def1Cost) def1SpeedPenalty = 3;
+                    if (defender2.stamina < def2Cost) def2SpeedPenalty = 3;
+
+                    attackValue = ((attackerCard.stats.passing?.value || 0) + (attackerCard.stats.speed?.value || 0) - atkSpeedPenalty) * 1.95;
+                    defenseValue = (def1Card.stats.speed?.value || 0) - def1SpeedPenalty +
+                        (def2Card.stats.speed?.value || 0) - def2SpeedPenalty;
                     break;
-                case "shoot":
-                    attackValue = ((attackerCard.stats.shooting?.value || 0) + (attackerCard.stats.speed?.value || 0)) * 1.95;
-                    defenseValue = (def1Card.stats.defending?.value || 0) + (def1Card.stats.speed?.value || 0) +
-                        (def2Card.stats.defending?.value || 0) + (def2Card.stats.speed?.value || 0);
+                }
+                case "shoot": {
+                    const atkCost = Math.max(attackerCard.stats.shooting?.cost || 0, attackerCard.stats.speed?.cost || 0);
+                    const def1Cost = Math.max(def1Card.stats.defending?.cost || 0, def1Card.stats.speed?.cost || 0);
+                    const def2Cost = Math.max(def2Card.stats.defending?.cost || 0, def2Card.stats.speed?.cost || 0);
+
+                    // Check stamina and apply penalties
+                    if (attacker.stamina < atkCost) atkSpeedPenalty = 3;
+                    if (defender1.stamina < def1Cost) def1SpeedPenalty = 3;
+                    if (defender2.stamina < def2Cost) def2SpeedPenalty = 3;
+
+                    attackValue = ((attackerCard.stats.shooting?.value || 0) + (attackerCard.stats.speed?.value || 0) - atkSpeedPenalty) * 1.95;
+                    defenseValue = (def1Card.stats.defending?.value || 0) + (def1Card.stats.speed?.value || 0) - def1SpeedPenalty +
+                        (def2Card.stats.defending?.value || 0) + (def2Card.stats.speed?.value || 0) - def2SpeedPenalty;
                     break;
+                }
             }
 
             const diff = attackValue - defenseValue;
@@ -232,7 +266,7 @@ class GameManager {
             }
         }
 
-        // âœ… 1v1 Battle (existing logic)
+        // ✅ 1v1 Battle
         const defenderId = defenderIdOrIds;
         const defender = getUnitInstance(defenderId);
 
@@ -243,21 +277,46 @@ class GameManager {
 
         let attackValue = 0;
         let defenseValue = 0;
+        let atkSpeedPenalty = 0;
+        let defSpeedPenalty = 0;
 
-        // This logic is mirrored from resolve1v1 to pre-calculate the outcome
         switch (action) {
-            case "dribble":
-                attackValue = (attackerCard.stats.dribbling?.value || 0) + (attackerCard.stats.speed?.value || 0);
-                defenseValue = (defenderCard.stats.defending?.value || 0) + (defenderCard.stats.speed?.value || 0);
+            case "dribble": {
+                const atkCost = Math.max(attackerCard.stats.dribbling?.cost || 0, attackerCard.stats.speed?.cost || 0);
+                const defCost = Math.max(defenderCard.stats.defending?.cost || 0, defenderCard.stats.speed?.cost || 0);
+
+                // Check stamina and apply penalties
+                if (attacker.stamina < atkCost) atkSpeedPenalty = 3;
+                if (defender.stamina < defCost) defSpeedPenalty = 3;
+
+                attackValue = (attackerCard.stats.dribbling?.value || 0) + (attackerCard.stats.speed?.value || 0) - atkSpeedPenalty;
+                defenseValue = (defenderCard.stats.defending?.value || 0) + (defenderCard.stats.speed?.value || 0) - defSpeedPenalty;
                 break;
-            case "pass":
-                attackValue = (attackerCard.stats.passing?.value || 0) + (attackerCard.stats.speed?.value || 0);
-                defenseValue = (defenderCard.stats.speed?.value || 0) * 2;
+            }
+            case "pass": {
+                const atkCost = Math.max(attackerCard.stats.passing?.cost || 0, attackerCard.stats.speed?.cost || 0);
+                const defCost = defenderCard.stats.speed?.cost || 0;
+
+                // Check stamina and apply penalties
+                if (attacker.stamina < atkCost) atkSpeedPenalty = 3;
+                if (defender.stamina < defCost) defSpeedPenalty = 3;
+
+                attackValue = (attackerCard.stats.passing?.value || 0) + (attackerCard.stats.speed?.value || 0) - atkSpeedPenalty;
+                defenseValue = ((defenderCard.stats.speed?.value || 0) - defSpeedPenalty) * 2;
                 break;
-            case "shoot":
-                attackValue = (attackerCard.stats.shooting?.value || 0) + (attackerCard.stats.speed?.value || 0);
-                defenseValue = (defenderCard.stats.defending?.value || 0) + (defenderCard.stats.speed?.value || 0);
+            }
+            case "shoot": {
+                const atkCost = Math.max(attackerCard.stats.shooting?.cost || 0, attackerCard.stats.speed?.cost || 0);
+                const defCost = Math.max(defenderCard.stats.defending?.cost || 0, defenderCard.stats.speed?.cost || 0);
+
+                // Check stamina and apply penalties
+                if (attacker.stamina < atkCost) atkSpeedPenalty = 3;
+                if (defender.stamina < defCost) defSpeedPenalty = 3;
+
+                attackValue = (attackerCard.stats.shooting?.value || 0) + (attackerCard.stats.speed?.value || 0) - atkSpeedPenalty;
+                defenseValue = (defenderCard.stats.defending?.value || 0) + (defenderCard.stats.speed?.value || 0) - defSpeedPenalty;
                 break;
+            }
         }
 
         const diff = attackValue - defenseValue;
@@ -271,6 +330,7 @@ class GameManager {
             return { type: 'die_roll', is2v1: false };
         }
     }
+
     getSerializableState() {
         const serializableUnits = Array.from(units.values()).map(u => ({
             id: u.id,
@@ -411,7 +471,7 @@ class GameManager {
             // Otherwise turn switches
             if (result.winner === attackerId && action !== 'dribble') {
                 // Winner keeps turn
-                this.turnManager.currentPlayer = attacker.ownerId;
+                this.turnManager.nextTurn();
             } else if (result.winner === 'defenders') {
                 // Defenders won - turn goes to defending team
                 // (actual ball carrier will be chosen by UI)
@@ -455,7 +515,7 @@ class GameManager {
                 attacker.position = defender.position;
                 // BUG FIX: DO NOT advance the turn here. The turn only advances AFTER
                 // the post-battle move is completed or skipped by the player.
-                // this.turnManager.nextTurn(); // <--- REMOVED
+                this.turnManager.nextTurn(); // <--- REMOVED
             }
 
             // Set up post-battle move state so the UI can prompt the player

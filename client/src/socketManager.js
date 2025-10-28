@@ -94,76 +94,85 @@ export class MultiplayerSync {
     })));
   }
 
-  syncFromServer(data) {
-    if (this.isProcessingUpdate) {
-      console.log("⸻ Skipping sync - update in progress");
-      return;
-    }
-
-    if (!this.game) {
-      console.log("⸻ Skipping sync - game not initialized yet");
-      return;
-    }
-
-    if (data.gameState?.battleRolls?.attackerReady && !data.gameState?.battleRolls?.defenderReady) {
-      console.log("⸻ Skipping sync - battle in progress");
-      return;
-    }
-
-    console.log("🔄 Syncing from server...", {
-      kickoffChosen: data.kickoffChosen,
-      hasUnits: data.gameState?.units?.length > 0,
-      state: data.state
-    });
-
-    this.game.score.P1 = data.score.P1;
-    this.game.score.P2 = data.score.P2;
-
-    this.game.turnManager.currentPlayer = data.turn;
-    this.game.turnManager.turnNumber = data.turnNumber || 1;
-
-    this.game.state = data.state;
-
-    if (data.gameState && data.gameState.units && data.gameState.units.length > 0) {
-      if (data.kickoffChosen || data.state === 'inProgress') {
-        const newHash = this.createUnitsHash(data.gameState.units);
-        if (newHash !== this.lastSyncedUnitsHash) {
-          console.log("📦 Units state changed, syncing...");
-          this.syncUnits(data.gameState.units);
-          this.lastSyncedUnitsHash = newHash;
-        }
-      }
-    }
-
-    const incomingBattle = data.gameState?.pendingBattle;
-    const battleStateChanged = JSON.stringify(incomingBattle) !== JSON.stringify(this.lastPendingBattleState);
-
-    if (battleStateChanged) {
-      console.log("⚔️ Battle state changed:", incomingBattle);
-      this.lastPendingBattleState = incomingBattle ? { ...incomingBattle } : null;
-
-      if (incomingBattle && incomingBattle.attackerId && incomingBattle.defenderId) {
-        const attacker = units.get(incomingBattle.attackerId);
-        const defender = units.get(incomingBattle.defenderId);
-
-        if (attacker && defender) {
-          this.game.pendingBattle = {
-            attackerId: incomingBattle.attackerId,
-            defenderId: incomingBattle.defenderId,
-            nodeId: incomingBattle.nodeId
-          };
-          console.log(`⚔️ Synced battle: ${attacker.id} vs ${defender.id} at node ${incomingBattle.nodeId}`);
-        } else {
-          console.warn("⚠️ Battle units not found, clearing pending battle");
-          this.game.pendingBattle = undefined;
-        }
-      } else {
-        this.game.pendingBattle = undefined;
-      }
-    }
-
-    this.onStateChange(data);
+syncFromServer(data) {
+  if (this.isProcessingUpdate) {
+    console.log("⸻ Skipping sync - update in progress");
+    return;
   }
+
+  if (!this.game) {
+    console.log("⸻ Skipping sync - game not initialized yet");
+    return;
+  }
+
+  // ✅ ONLY skip unit sync during mid-roll, but still process other data
+  const skipUnitSync = data.gameState?.battleRolls?.attackerReady && 
+                       !data.gameState?.battleRolls?.defenderReady;
+  
+  if (skipUnitSync) {
+    console.log("⚠️ Battle in progress - skipping unit sync only");
+  }
+
+  console.log("🔄 Syncing from server...", {
+    kickoffChosen: data.kickoffChosen,
+    hasUnits: data.gameState?.units?.length > 0,
+    state: data.state
+  });
+
+  this.game.score.P1 = data.score.P1;
+  this.game.score.P2 = data.score.P2;
+
+  this.game.turnManager.currentPlayer = data.turn;
+  this.game.turnManager.turnNumber = data.turnNumber || 1;
+
+  this.game.state = data.state;
+
+  // ✅ Only skip unit sync if mid-roll
+  if (data.gameState && data.gameState.units && data.gameState.units.length > 0 && !skipUnitSync) {
+    if (data.kickoffChosen || data.state === 'inProgress') {
+      const newHash = this.createUnitsHash(data.gameState.units);
+      if (newHash !== this.lastSyncedUnitsHash) {
+        console.log("📦 Units state changed, syncing...");
+        this.syncUnits(data.gameState.units);
+        this.lastSyncedUnitsHash = newHash;
+      }
+    }
+  }
+
+  // ✅ Always sync battle state
+  const incomingBattle = data.gameState?.pendingBattle;
+  const battleStateChanged = JSON.stringify(incomingBattle) !== JSON.stringify(this.lastPendingBattleState);
+
+  if (battleStateChanged) {
+    console.log("⚔️ Battle state changed:", incomingBattle);
+    this.lastPendingBattleState = incomingBattle ? { ...incomingBattle } : null;
+
+    if (incomingBattle && incomingBattle.attackerId) {
+      // Handle both 1v1 and 2v1
+      if (incomingBattle.is2v1 && incomingBattle.defenderIds) {
+        this.game.pendingBattle = {
+          attackerId: incomingBattle.attackerId,
+          defenderIds: incomingBattle.defenderIds,
+          nodeId: incomingBattle.nodeId,
+          is2v1: true
+        };
+        console.log(`⚔️⚔️ Synced 2v1 battle: ${incomingBattle.attackerId} vs [${incomingBattle.defenderIds.join(', ')}]`);
+      } else if (incomingBattle.defenderId) {
+        this.game.pendingBattle = {
+          attackerId: incomingBattle.attackerId,
+          defenderId: incomingBattle.defenderId,
+          nodeId: incomingBattle.nodeId,
+          is2v1: false
+        };
+        console.log(`⚔️ Synced 1v1 battle: ${incomingBattle.attackerId} vs ${incomingBattle.defenderId}`);
+      }
+    } else {
+      this.game.pendingBattle = undefined;
+    }
+  }
+
+  this.onStateChange(data);
+}
 
   syncUnits(serverUnits) {
     console.log("🔧 Syncing units from server...");
