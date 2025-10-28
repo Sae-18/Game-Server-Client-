@@ -107,9 +107,9 @@ function resolve1v1(attackerId, defenderId, action, turnManager, targetNodeId, m
 
     // Locks: 2 turns for dribble, 1 for pass/shoot
     if (action === "dribble") {
-        loserUnit.lockTurns = 3;
+        loserUnit.lockTurns = 4;
     } else {
-        loserUnit.lockTurns = 2;
+        loserUnit.lockTurns = 3;
     }
 
     // Ball transfer
@@ -270,8 +270,8 @@ function resolve2v1(attackerId, defenderIds, action, turnManager, targetNodeId, 
 
     // Locks
     if (winner === attackerId) {
-        def1.lockTurns = action === "dribble" ? 3 : 2;
-        def2.lockTurns = action === "dribble" ? 3 : 2;
+        def1.lockTurns = action === "dribble" ? 4 : 3;
+        def2.lockTurns = action === "dribble" ? 4 : 3;
         attacker.hasBall = true;
         def1.hasBall = false;
         def2.hasBall = false;
@@ -293,7 +293,7 @@ function resolve2v1(attackerId, defenderIds, action, turnManager, targetNodeId, 
             effects.scoreGoal = true;
         }
     } else {
-        attacker.lockTurns = action === "dribble" ? 3 : 2;
+        attacker.lockTurns = action === "dribble" ? 4 : 3;
         attacker.hasBall = false;
         effects.chooseBallRecipient = true;
 

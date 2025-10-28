@@ -1109,8 +1109,8 @@ function renderUnits() {
           if (!mpSync || !mpSync.isMyTurn()) return;
 
           if (actionMode === 'pass' && selectedUnitId) {
-            const origin = getUnitInstance(selectedUnitId); // Use getUnitInstance instead
-            if (unit.ownerId === origin.ownerId && unit.id !== origin.id) {
+            const origin = units.get(selectedUnitId);
+            if (origin && unit.ownerId === origin.ownerId && unit.id !== origin.id) {
               doPass(selectedUnitId, unit.position);
             }
             return;
@@ -1176,13 +1176,15 @@ function renderStaminaBars() {
     const barOuter = document.createElement('div');
     barOuter.className = 'w-full bg-slate-700 h-3 rounded relative';
 
+    const staminaPercent = (unit.stamina / unit.baseStamina) * 100;
+
     const barInner = document.createElement('div');
     barInner.className = 'h-3 rounded transition-all duration-300';
-    barInner.style.width = `${unit.stamina}%`;
-    barInner.style.backgroundColor = unit.stamina > 30 ? '#22c55e' : '#ef4444';
+    barInner.style.width = `${staminaPercent}%`;
+    barInner.style.backgroundColor = staminaPercent > 30 ? '#22c55e' : '#ef4444';
 
     const valueLabel = document.createElement('div');
-    valueLabel.textContent = `${unit.stamina}/100`;
+    valueLabel.textContent = `${unit.stamina}/${unit.baseStamina}`;
     valueLabel.className = 'absolute top-0 left-1 text-xs text-white font-bold';
     valueLabel.style.pointerEvents = 'none';
 
@@ -1203,6 +1205,7 @@ function renderStaminaBars() {
     staminaBars.appendChild(wrapper);
   });
 }
+
 
 function updateScoreboard() {
   if (!game) return;
@@ -2286,9 +2289,11 @@ async function handleGoal() {
   spawnWithStamina('P2', p2Cards[1], 11);
   spawnWithStamina('P2', p2Cards[2], 10);
 
-  // Set kickoff to opposite team of who scored
-  const kickoffTeam = game.turnManager.currentPlayer === 'P1' ? 'P2' : 'P1';
+  // Set kickoff to team that was scored against (opposite of who scored)
+  const teamThatScored = scorer || game.turnManager.currentPlayer;
+  const kickoffTeam = teamThatScored === 'P1' ? 'P2' : 'P1';
   const firstUnit = Array.from(units.values()).find(u => u.ownerId === kickoffTeam);
+
   if (firstUnit) {
     for (const u of units.values()) u.hasBall = false;
     firstUnit.hasBall = true;

@@ -90,6 +90,7 @@ export class MultiplayerSync {
       pos: u.position,
       ball: u.hasBall,
       stam: u.stamina,
+      bStam : u.stamina,
       lock: u.lockTurns
     })));
   }
@@ -205,6 +206,7 @@ syncFromServer(data) {
         position: u.position,
         hasBall: u.hasBall || false,
         stamina: u.stamina ?? 100,
+        baseStamina: u.stamina ?? 100,
         lockTurns: u.lockTurns ?? 0,
         stats: u.stats,
         rarity: u.rarity
@@ -253,6 +255,7 @@ syncFromServer(data) {
           position: u.position ?? null,
           hasBall: hasBall,
           stamina: u.stamina ?? 100,
+          baseStamina: u.stamina ?? 100,
           lockTurns: u.lockTurns ?? 0,
           stats: u.stats ?? null,
           rarity: u.rarity ?? null

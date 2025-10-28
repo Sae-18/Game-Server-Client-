@@ -9,6 +9,7 @@ class Unit {
         this.cardId = cardId;
         this.position = position;
         this.stamina = stamina;
+        this.baseStamina = stamina;
         this.lockTurns = 0;
         this.hasBall = false;
         this.rarity = (_a = cardMap.get(cardId)) === null || _a === void 0 ? void 0 : _a.rarity;
@@ -36,6 +37,7 @@ function spawnUnitFromCard(ownerId, cardId, startNode) {
     if (!template)
         throw new Error(`Card template not found: ${cardId}`);
     const stamina = template.stamina;
+    const baseStamina = template.stamina;
     const stats = template.stats;
     const hasBall = !!template.hasBall; // Ensure boolean
     const unitId = `${ownerId}-${cardId}-${unitCounter++}`;
