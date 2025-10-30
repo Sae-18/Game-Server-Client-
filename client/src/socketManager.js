@@ -229,7 +229,8 @@ export class MultiplayerSync {
         permanentlyLocked: u.permanentlyLocked || false,
         lockTurns: u.lockTurns ?? 0,
         stats: u.stats,
-        rarity: u.rarity
+        rarity: u.rarity,
+        isGK: u.isGK || false // ✅ Sync isGK property
       };
       units.set(u.id, unit);
 
@@ -281,7 +282,8 @@ export class MultiplayerSync {
           lockTurns: u.lockTurns ?? 0,
           permanentlyLocked: u.permanentlyLocked || false,
           stats: u.stats ?? null,
-          rarity: u.rarity ?? null
+          rarity: u.rarity ?? null,
+          isGK: u.isGK || false // ✅ Push isGK property
         };
       });
 

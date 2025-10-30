@@ -54,6 +54,7 @@ function getNeighbors(id) {
         return [];
     return node.neighbors.map(nid => nodes.get(nid)).filter(Boolean);
 }
+// ✅ UPDATE moveUnit function in board.js
 function moveUnit(unitId, fromId, toId) {
     const fromNode = getNode(fromId);
     const toNode = getNode(toId);
@@ -65,11 +66,31 @@ function moveUnit(unitId, fromId, toId) {
         console.log("Not a neighbor");
         return false;
     }
+
     fromNode.removeOccupant(unitId);
     toNode.addOccupant(unitId);
+
     const unit = units.get(unitId);
-    if (unit)
+    if (unit) {
         unit.position = toId;
+
+        // ✅ LOG GK MOVEMENT AND PENALTY
+        if (unit.isGK) {
+            let penalty = 0;
+            if (unit.ownerId === 'P1') {
+                if (toId === 1) penalty = 0;
+                else if (toId === 2 || toId === 3) penalty = 3;
+                else penalty = 6;
+            } else if (unit.ownerId === 'P2') {
+                if (toId === 12) penalty = 0;
+                else if (toId === 10 || toId === 11) penalty = 3;
+                else penalty = 6;
+            }
+
+            console.log(`🥅 GK ${unit.name} moved to node ${toId} → Speed Penalty: -${penalty}`);
+        }
+    }
+
     assertNoDuplicateOccupants();
     return true;
 }

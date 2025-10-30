@@ -1,6 +1,7 @@
 import { GameManager } from './engine/game.js';
 import { units, spawnUnitFromCard, resetUnits } from './engine/unit.js';
 import { MultiplayerSync } from './socketManager.js';
+import { resolve1v1, resolve2v1Attackers, resolve2v1 } from './engine/battleResolver.js';
 
 // Add this function near the top of gameRooms.js, after the imports
 function setupBattleResultListener() {
@@ -1394,6 +1395,16 @@ function renderPendingBattlePanel() {
       battleActions.appendChild(btn);
     });
 
+    const surrenderBtn = document.createElement('button');
+    surrenderBtn.textContent = 'Surrender (-2 stamina each)';
+    surrenderBtn.className = 'px-3 py-1 m-1 rounded bg-red-700 text-white hover:bg-red-600 font-bold';
+    surrenderBtn.addEventListener('click', () => {
+      console.log(`🏳️ Attackers surrendered in 2v1 attackers`);
+      battleActions.querySelectorAll('button').forEach(b => b.disabled = true);
+      handleSurrender('attacker');
+    });
+    battleActions.appendChild(surrenderBtn);
+
     return;
   }
 
@@ -1482,6 +1493,16 @@ function renderPendingBattlePanel() {
       battleActions.appendChild(btn);
     });
 
+    const surrenderBtn = document.createElement('button');
+    surrenderBtn.textContent = 'Surrender (-2 stamina each)';
+    surrenderBtn.className = 'px-3 py-1 m-1 rounded bg-red-700 text-white hover:bg-red-600 font-bold';
+    surrenderBtn.addEventListener('click', () => {
+      console.log(`🏳️ Attackers surrendered in 2v1 attackers`);
+      battleActions.querySelectorAll('button').forEach(b => b.disabled = true);
+      handleSurrender('attacker');
+    });
+    battleActions.appendChild(surrenderBtn);
+
     return;
   }
 
@@ -1550,7 +1571,19 @@ function renderPendingBattlePanel() {
     });
     battleActions.appendChild(btn);
   });
+
+  const surrenderBtn = document.createElement('button');
+  surrenderBtn.textContent = 'Surrender (-2 stamina)';
+  surrenderBtn.className = 'px-3 py-1 m-1 rounded bg-red-700 text-white hover:bg-red-600 font-bold';
+  surrenderBtn.addEventListener('click', () => {
+    console.log(`🏳️ Attacker surrendered`);
+    battleActions.querySelectorAll('button').forEach(b => b.disabled = true);
+    handleSurrender('attacker');
+  });
+  battleActions.appendChild(surrenderBtn);
 }
+
+
 
 
 // Helper function to initiate battle rolls for both players
@@ -1584,12 +1617,11 @@ function initiateBattleRolls(action, attackerId, defenderId) {
 
 
 
+// ✅ UPDATE showManualDieRoll to add surrender button for defenders
 function showManualDieRoll(label, callback) {
-  // Remove any existing overlay if it exists
   const existing = document.getElementById('dice-roll-overlay');
   if (existing) existing.remove();
 
-  // === Overlay container ===
   const overlay = document.createElement('div');
   overlay.id = 'dice-roll-overlay';
   overlay.className = `
@@ -1597,20 +1629,17 @@ function showManualDieRoll(label, callback) {
     transition-opacity duration-300
   `;
 
-  // === Modal box ===
   const box = document.createElement('div');
   box.className = `
     bg-gray-900 text-white rounded-2xl shadow-2xl p-6 text-center w-80
     border border-blue-500/40
   `;
 
-  // === Title ===
   const title = document.createElement('h2');
   title.className = 'text-xl font-bold mb-4 text-blue-400';
   title.textContent = `${label}: Roll Your Die`;
   box.appendChild(title);
 
-  // === Die display ===
   const dieDisplay = document.createElement('div');
   dieDisplay.className = `
     text-6xl font-extrabold mb-6 text-yellow-400 select-none
@@ -1618,7 +1647,6 @@ function showManualDieRoll(label, callback) {
   dieDisplay.textContent = '🎲';
   box.appendChild(dieDisplay);
 
-  // === Roll button ===
   const rollBtn = document.createElement('button');
   rollBtn.textContent = 'Roll!';
   rollBtn.className = `
@@ -1627,22 +1655,34 @@ function showManualDieRoll(label, callback) {
   `;
   box.appendChild(rollBtn);
 
-  // === Status / result text ===
+  // ✅ ADD SURRENDER BUTTON
+  const surrenderBtn = document.createElement('button');
+  surrenderBtn.textContent = 'Surrender (-2 stamina)';
+  surrenderBtn.className = `
+    px-5 py-2 mt-2 bg-red-700 hover:bg-red-600 rounded-lg font-bold
+    transition transform active:scale-95 shadow-lg
+  `;
+  surrenderBtn.addEventListener('click', () => {
+    overlay.classList.add('opacity-0');
+    setTimeout(() => overlay.remove(), 300);
+    handleSurrender('defender');
+  });
+  box.appendChild(surrenderBtn);
+
   const resultText = document.createElement('p');
   resultText.className = 'text-sm mt-4 text-gray-300';
-  resultText.textContent = 'Click to roll the die.';
+  resultText.textContent = 'Click to roll the die or surrender.';
   box.appendChild(resultText);
 
   overlay.appendChild(box);
   document.body.appendChild(overlay);
 
-  // === Rolling logic ===
   rollBtn.addEventListener('click', () => {
     rollBtn.disabled = true;
+    surrenderBtn.disabled = true;
     resultText.textContent = 'Rolling...';
     dieDisplay.textContent = '⚙️';
 
-    // Roll animation (like shaking dice)
     let rollCount = 0;
     const interval = setInterval(() => {
       dieDisplay.textContent = String(Math.floor(Math.random() * 6) + 1);
@@ -1664,6 +1704,67 @@ function showManualDieRoll(label, callback) {
   });
 }
 
+async function handleSurrender(surrenderingSide) {
+  if (!game.pendingBattle) return;
+
+  const { attackerIds, defenderId, defenderIds, is2v1, is2v1Attackers, is2v1Defenders } = game.pendingBattle;
+
+  console.log(`🏳️ ${surrenderingSide} surrendered`);
+
+  let result;
+
+  // Handle different battle types
+  if (is2v1Attackers) {
+    // 2 attackers vs 1 defender
+    result = resolve2v1Attackers(attackerIds, defenderId, 'dribble', game.turnManager, null, null, true, surrenderingSide);
+  } else if (is2v1Defenders) {
+    // 1 attacker vs 2 defenders
+    result = resolve2v1(attackerIds[0], defenderIds, 'dribble', game.turnManager, null, null, true, surrenderingSide);
+  } else {
+    // 1v1
+    result = resolve1v1(attackerIds[0], defenderId, 'dribble', game.turnManager, null, null, true, surrenderingSide);
+  }
+
+  if (!result) {
+    console.error("❌ Surrender failed");
+    return;
+  }
+
+  // Clear battle state
+  game.pendingBattle = null;
+  battleActions.innerHTML = '';
+  pendingBattlePanel.classList.add('hidden');
+
+  await mpSync.pushToServer();
+
+  mpSync.socket.emit('finalizeBattle', {
+    roomCode,
+    result: {
+      winner: result.winner,
+      winnerId: result.winner,
+      loser: result.loser || result.losers,
+      rolls: null,
+      action: 'surrender',
+      is2v1: is2v1,
+      is2v1Attackers: is2v1Attackers,
+      is2v1Defenders: is2v1Defenders,
+      surrendered: true,
+      surrenderingSide: surrenderingSide
+    }
+  });
+
+  renderUnits();
+  updateScoreboard();
+  clearSelection();
+  checkAndLockDepletedUnits();
+
+  setTimeout(() => {
+    if (checkForBattles()) {
+      mpSync.pushToServer();
+      renderPendingBattlePanel();
+    }
+  }, 100);
+}
 
 
 
