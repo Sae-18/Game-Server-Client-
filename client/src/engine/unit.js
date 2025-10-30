@@ -39,17 +39,39 @@ function spawnUnitFromCard(ownerId, cardId, startNode) {
     const stamina = template.stamina;
     const baseStamina = template.stamina;
     const stats = template.stats;
-    const hasBall = !!template.hasBall; // Ensure boolean
-    const unitId = `${ownerId}-${cardId}-${unitCounter++}`;
+    const hasBall = !!template.hasBall;
+
+    // ✅ Use deterministic ID based on owner, card, and position instead of counter
+    const unitId = `${ownerId}-${cardId}-${startNode}`;
+
+    // ✅ If unit already exists at this position, remove it first
+    const existingUnit = units.get(unitId);
+    if (existingUnit) {
+        const node = nodes.get(startNode);
+        if (node) {
+            node.removeOccupant(unitId);
+        }
+        units.delete(unitId);
+    }
+
     const unit = new Unit(unitId, ownerId, cardId, startNode, stamina);
     unit.hasBall = hasBall;
     units.set(unitId, unit);
     (_a = nodes.get(startNode)) === null || _a === void 0 ? void 0 : _a.addOccupant(unitId);
     return unitId;
 }
+
 // Add this function to clear units and reset the counter
 function resetUnits() {
+    // ✅ Clear all node occupants first
+    for (let i = 1; i <= 12; i++) {
+        const node = nodes.get(i);
+        if (node) {
+            node.occupants.clear();
+        }
+    }
+
     units.clear();
-    unitCounter = 1;
+    // ✅ No need to reset unitCounter since we use deterministic IDs now
 }
 export { Unit, units, spawnUnitFromCard, cardMap, resetUnits };

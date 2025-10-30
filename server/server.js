@@ -103,6 +103,7 @@ io.on('connection', (socket) => {
   });
 
   // UPDATE GAME STATE
+  // ✅ UPDATED 'updateGameState' socket handler (inside io.on('connection'))
   socket.on('updateGameState', (data) => {
     const { roomCode } = data;
     const room = rooms.get(roomCode);
@@ -120,32 +121,42 @@ io.on('connection', (socket) => {
     if (data.gameState) {
       if (data.gameState.units) room.gameState.units = data.gameState.units;
 
-      // ✅ HANDLE BOTH 1v1 AND 2v1 PENDING BATTLES
+      // ✅ UPDATED PENDING BATTLE HANDLING
       if (data.gameState.pendingBattle !== undefined) {
         const battle = data.gameState.pendingBattle;
 
-        // ❌ Only allow clearing IF explicitly finalized server-side
+        // Only allow clearing IF explicitly finalized server-side
         if (battle === null && !room.gameState.battleFinalizing) {
           console.log(`⚠️ Ignoring client attempt to clear battle (room: ${roomCode})`);
         }
         else if (battle !== null) {
-          // Store new pending battle
+          // ✅ Store new pending battle with all flags
           room.gameState.pendingBattle = {
-            attackerId: battle.attackerId,
+            attackerIds: battle.attackerIds ?? [],
             nodeId: battle.nodeId,
             is2v1: battle.is2v1 || false,
+            is2v1Attackers: battle.is2v1Attackers || false,
+            is2v1Defenders: battle.is2v1Defenders || false,
             initiator: battle.initiator || null
           };
-          if (battle.is2v1 && battle.defenderIds) {
-            room.gameState.pendingBattle.defenderIds = battle.defenderIds;
-            console.log(`⚔️⚔️ 2v1 Battle stored: ${battle.attackerId} vs [${battle.defenderIds.join(', ')}]`);
-          } else if (battle.defenderId) {
+
+          // ✅ Handle 2v1 Attackers
+          if (battle.is2v1Attackers && battle.defenderId) {
             room.gameState.pendingBattle.defenderId = battle.defenderId;
-            console.log(`⚔️ 1v1 Battle stored: ${battle.attackerId} vs ${battle.defenderId}`);
+            console.log(`⚔️⚔️ 2v1 Attackers Battle stored: [${battle.attackerIds.join(', ')}] vs ${battle.defenderId}`);
+          }
+          // ✅ Handle 2v1 Defenders
+          else if (battle.is2v1Defenders && battle.defenderIds) {
+            room.gameState.pendingBattle.defenderIds = battle.defenderIds;
+            console.log(`⚔️⚔️ 2v1 Defenders Battle stored: ${battle.attackerIds[0]} vs [${battle.defenderIds.join(', ')}]`);
+          }
+          // ✅ Handle 1v1
+          else if (battle.defenderId) {
+            room.gameState.pendingBattle.defenderId = battle.defenderId;
+            console.log(`⚔️ 1v1 Battle stored: ${battle.attackerIds[0]} vs ${battle.defenderId}`);
           }
         }
       }
-
 
       if (data.gameState.battleRolls) {
         room.gameState.battleRolls = {
@@ -169,6 +180,8 @@ io.on('connection', (socket) => {
     // Broadcast to all clients in the room
     io.to(roomCode).emit('gameStateUpdate', room);
   });
+
+
 
   // COIN TOSS ROLL
   socket.on('coinTossRoll', (data) => {
@@ -239,6 +252,8 @@ io.on('connection', (socket) => {
 
     room.gameState.battleFinalizing = true;
 
+    const is2v1Attackers = result.is2v1Attackers || false;
+    const is2v1Defenders = result.is2v1Defenders || false;
     const is2v1 = result.is2v1 || false;
 
     // Reset battle state on server
@@ -252,7 +267,11 @@ io.on('connection', (socket) => {
       defenderReady: false
     };
 
-    console.log(`🏁 ${is2v1 ? '2v1' : '1v1'} Battle finalized in room ${roomCode}. Winner: ${result.winner}`);
+    let battleTypeStr = is2v1Attackers ? '2v1 Attackers' :
+      is2v1Defenders ? '2v1 Defenders' :
+        is2v1 ? '2v1' : '1v1';
+
+    console.log(`🏆 ${battleTypeStr} Battle finalized in room ${roomCode}. Winner: ${result.winner}`);
 
     // Broadcast battle resolution to everyone in the room
     io.to(roomCode).emit('battleResolved', {
@@ -260,13 +279,15 @@ io.on('connection', (socket) => {
       loser: result.loser,
       rolls: result.rolls,
       action: result.action,
-      is2v1: is2v1  // ✅ Include battle type
+      is2v1: is2v1,
+      is2v1Attackers: is2v1Attackers,
+      is2v1Defenders: is2v1Defenders
     });
 
     // Also push updated game state
     io.to(roomCode).emit('gameStateUpdate', room);
 
-      room.gameState.battleFinalizing = false; 
+    room.gameState.battleFinalizing = false;
   });
 
   // CLEAR BATTLE

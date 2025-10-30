@@ -306,4 +306,157 @@ function resolve2v1(attackerId, defenderIds, action, turnManager, targetNodeId, 
     return { winner, losers: winner === attackerId ? defenderIds : [attackerId], action, postEffects: effects };
 }
 
-export { resolve1v1, resolve2v1 };
+// ✅ NEW FUNCTION: 2 attackers vs 1 defender
+function resolve2v1Attackers(attackerIds, defenderId, action, turnManager, targetNodeId, manualRolls) {
+    const attacker1 = units.get(attackerIds[0]);
+    const attacker2 = units.get(attackerIds[1]);
+    const defender = units.get(defenderId);
+
+    if (!attacker1 || !attacker2 || !defender) return null;
+
+    const atk1Card = cardMap.get(attacker1.cardId);
+    const atk2Card = cardMap.get(attacker2.cardId);
+    const defCard = cardMap.get(defender.cardId);
+
+    if (!atk1Card || !atk2Card || !defCard) return null;
+
+    let atkVal = 0, defVal = 0, atkCost1 = 0, atkCost2 = 0, defCost = 0;
+    let atk1SpeedPenalty = 0, atk2SpeedPenalty = 0, defSpeedPenalty = 0;
+
+    // Defender gets 1.95x multiplier (outnumbered)
+    if (action === "dribble") {
+        atkCost1 = Math.max(atk1Card.stats.dribbling?.cost || 0, atk1Card.stats.speed?.cost || 0);
+        atkCost2 = Math.max(atk2Card.stats.dribbling?.cost || 0, atk2Card.stats.speed?.cost || 0);
+        defCost = Math.max(defCard.stats.defending?.cost || 0, defCard.stats.speed?.cost || 0);
+
+        if (attacker1.stamina < atkCost1) atk1SpeedPenalty = 3;
+        if (attacker2.stamina < atkCost2) atk2SpeedPenalty = 3;
+        if (defender.stamina < defCost) defSpeedPenalty = 3;
+
+        atkVal = (atk1Card.stats.dribbling?.value || 0) + (atk1Card.stats.speed?.value || 0) - atk1SpeedPenalty +
+            (atk2Card.stats.dribbling?.value || 0) + (atk2Card.stats.speed?.value || 0) - atk2SpeedPenalty;
+        defVal = ((defCard.stats.defending?.value || 0) + (defCard.stats.speed?.value || 0) - defSpeedPenalty) * 1.95;
+    } else if (action === "pass") {
+        atkCost1 = Math.max(atk1Card.stats.passing?.cost || 0, atk1Card.stats.speed?.cost || 0);
+        atkCost2 = Math.max(atk2Card.stats.passing?.cost || 0, atk2Card.stats.speed?.cost || 0);
+        defCost = defCard.stats.speed?.cost || 0;
+
+        if (attacker1.stamina < atkCost1) atk1SpeedPenalty = 3;
+        if (attacker2.stamina < atkCost2) atk2SpeedPenalty = 3;
+        if (defender.stamina < defCost) defSpeedPenalty = 3;
+
+        atkVal = (atk1Card.stats.passing?.value || 0) + (atk1Card.stats.speed?.value || 0) - atk1SpeedPenalty +
+            (atk2Card.stats.passing?.value || 0) + (atk2Card.stats.speed?.value || 0) - atk2SpeedPenalty;
+        defVal = ((defCard.stats.speed?.value || 0) - defSpeedPenalty) * 1.95;
+    } else if (action === "shoot") {
+        atkCost1 = Math.max(atk1Card.stats.shooting?.cost || 0, atk1Card.stats.speed?.cost || 0);
+        atkCost2 = Math.max(atk2Card.stats.shooting?.cost || 0, atk2Card.stats.speed?.cost || 0);
+        defCost = Math.max(defCard.stats.defending?.cost || 0, defCard.stats.speed?.cost || 0);
+
+        if (attacker1.stamina < atkCost1) atk1SpeedPenalty = 3;
+        if (attacker2.stamina < atkCost2) atk2SpeedPenalty = 3;
+        if (defender.stamina < defCost) defSpeedPenalty = 3;
+
+        atkVal = (atk1Card.stats.shooting?.value || 0) + (atk1Card.stats.speed?.value || 0) - atk1SpeedPenalty +
+            (atk2Card.stats.shooting?.value || 0) + (atk2Card.stats.speed?.value || 0) - atk2SpeedPenalty;
+        defVal = ((defCard.stats.defending?.value || 0) + (defCard.stats.speed?.value || 0) - defSpeedPenalty) * 1.95;
+    }
+
+    const diff = atkVal - defVal;
+    let winner, dieRollUsed = false, atkRoll = null, defRoll = null;
+
+    // Threshold is 10 for 2v1
+    if (Math.abs(diff) > 10) {
+        winner = diff > 0 ? 'attackers' : defenderId;
+        // Spend stamina for loser only
+        if (winner === defenderId) {
+            attacker1.stamina = Math.max(0, attacker1.stamina - atkCost1);
+            attacker2.stamina = Math.max(0, attacker2.stamina - atkCost2);
+        } else {
+            defender.stamina = Math.max(0, defender.stamina - defCost);
+        }
+    } else {
+        dieRollUsed = true;
+        // Both sides spend stamina in die roll
+        attacker1.stamina = Math.max(0, attacker1.stamina - atkCost1);
+        attacker2.stamina = Math.max(0, attacker2.stamina - atkCost2);
+        defender.stamina = Math.max(0, defender.stamina - defCost);
+
+        if (manualRolls && manualRolls.attackers !== undefined && manualRolls.defender !== undefined) {
+            atkRoll = manualRolls.attackers;
+            defRoll = manualRolls.defender;
+        } else {
+            atkRoll = getRandInt(1, 6);
+            defRoll = getRandInt(1, 6);
+        }
+
+        // Apply -2 penalty to die roll of weaker side
+        let finalAtkRoll = atkRoll;
+        let finalDefRoll = defRoll;
+
+        if (atkVal < defVal) {
+            finalAtkRoll = atkRoll - 2;
+        } else if (defVal < atkVal) {
+            finalDefRoll = defRoll - 2;
+        }
+
+        winner = finalAtkRoll > finalDefRoll ? 'attackers' : defenderId;
+    }
+
+    const effects = { is2v1Attackers: true, attackerIds };
+    if (dieRollUsed) {
+        effects.attackersRoll = atkRoll;
+        effects.defenderRoll = defRoll;
+    }
+
+    // Add stamina penalty info
+    if (atk1SpeedPenalty > 0 || atk2SpeedPenalty > 0) {
+        effects.attackersStaminaPenalty = [];
+        if (atk1SpeedPenalty > 0) effects.attackersStaminaPenalty.push(attackerIds[0]);
+        if (atk2SpeedPenalty > 0) effects.attackersStaminaPenalty.push(attackerIds[1]);
+    }
+    if (defSpeedPenalty > 0) effects.defenderStaminaPenalty = true;
+
+    // Locks
+    if (winner === 'attackers') {
+        defender.lockTurns = action === "dribble" ? 4 : 3;
+
+        // Find ball carrier
+        let ballCarrier = attacker1.hasBall ? attacker1 : attacker2;
+        ballCarrier.hasBall = true;
+        defender.hasBall = false;
+
+        if (action === "pass") {
+            // Pass to other attacker
+            const otherAttacker = ballCarrier.id === attacker1.id ? attacker2 : attacker1;
+            ballCarrier.hasBall = false;
+            otherAttacker.hasBall = true;
+            effects.ballRecipient = otherAttacker.id;
+        } else if (action === "shoot") {
+            effects.scoreGoal = true;
+        }
+        // For dribble: just advance turn (handled in game.js)
+    } else {
+        attacker1.lockTurns = action === "dribble" ? 4 : 3;
+        attacker2.lockTurns = action === "dribble" ? 4 : 3;
+        attacker1.hasBall = false;
+        attacker2.hasBall = false;
+        defender.hasBall = true;
+
+        if (action === "shoot") {
+            // Find ball carrier position
+            const ballCarrier = attacker1.hasBall ? attacker1 : attacker2;
+            const pos = ballCarrier.position;
+            effects.moveBackNode = pos === 12 ? 10 : (pos === 1 ? 2 : null);
+        }
+    }
+
+    return {
+        winner,
+        losers: winner === 'attackers' ? [defenderId] : attackerIds,
+        action,
+        postEffects: effects
+    };
+}
+
+export { resolve1v1, resolve2v1, resolve2v1Attackers };

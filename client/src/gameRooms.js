@@ -27,7 +27,7 @@ function setupBattleResultListener() {
 }
 
 // ⚠️ IMPORTANT: Change this based on your environment
-const SERVER_URL = 'https://game-server-production-b429.up.railway.app';
+const SERVER_URL = 'http://localhost:3000';
 
 console.log('🔌 Will connect to server:', SERVER_URL);
 
@@ -282,30 +282,16 @@ function checkForBattles() {
     currentTurn: game.turnManager.currentPlayer
   });
 
-  // Don't check if already in a battle or not active
   if (game.pendingBattle || game.state !== 'inProgress') {
-    console.log("⏹️ Not checking - pending battle or wrong state");
+    console.log("ℹ️ Not checking - pending battle or wrong state");
     return false;
   }
 
   const unitsPerNode = getUnitsPerNode();
-  console.log("📊 Units per node:",
-    Array.from(unitsPerNode.entries()).map(([nodeId, units]) => ({
-      nodeId,
-      count: units.length,
-      units: units.map(u => ({
-        id: u.id,
-        owner: u.ownerId,
-        hasBall: u.hasBall,
-        lockTurns: u.lockTurns || 0
-      }))
-    }))
-  );
 
   for (const [nodeId, nodeUnits] of unitsPerNode.entries()) {
     if (nodeUnits.length < 2) continue;
 
-    // Filter out locked units – they can't fight
     const activeUnits = nodeUnits.filter(u => !u.locked && !(u.lockTurns > 0));
     if (activeUnits.length < 2) {
       console.log(`🔒 Node ${nodeId}: All or most units locked, skipping`);
@@ -324,17 +310,14 @@ function checkForBattles() {
         continue;
       }
 
-      // Skip if ball carrier is locked
       if (ballCarrier.locked || ballCarrier.lockTurns > 0) {
         console.log(`🚫 Ball carrier ${ballCarrier.id} locked, skipping battle`);
         continue;
       }
 
-      // ✅ Determine attacker and defender teams
       const attackerTeamUnits = activeUnits.filter(u => u.ownerId === ballCarrier.ownerId);
       const defenderTeamUnits = activeUnits.filter(u => u.ownerId !== ballCarrier.ownerId);
 
-      // Filter out locked defenders
       const validDefenders = defenderTeamUnits.filter(u => !u.locked && !(u.lockTurns > 0));
 
       if (validDefenders.length === 0) {
@@ -344,27 +327,52 @@ function checkForBattles() {
 
       const battleInitiator = game.turnManager.currentPlayer;
 
-      // ✅ CHECK FOR 2v1 BATTLE
+      // ✅ CHECK FOR 2 ATTACKERS VS 1 DEFENDER
+      if (attackerTeamUnits.length === 2 && validDefenders.length === 1) {
+        console.log(`⚔️⚔️ 2v1 ATTACKERS BATTLE TRIGGERED at node ${nodeId}!`, {
+          attackers: attackerTeamUnits.map(a => a.id),
+          defender: validDefenders[0].id,
+          initiator: battleInitiator
+        });
+
+        game.pendingBattle = {
+          attackerIds: attackerTeamUnits.map(a => a.id),
+          defenderId: validDefenders[0].id,
+          nodeId: nodeId,
+          initiator: battleInitiator,
+          is2v1: true,
+          is2v1Attackers: true,
+          is2v1Defenders: false
+        };
+
+        console.log(`⚔️⚔️ 2v1 Attackers Battle setup complete`);
+        return true;
+      }
+
+      // ✅ CHECK FOR 1 ATTACKER VS 2 DEFENDERS
       if (attackerTeamUnits.length === 1 && validDefenders.length === 2) {
-        console.log(`⚔️⚔️ 2v1 BATTLE TRIGGERED at node ${nodeId}!`, {
+        console.log(`⚔️⚔️ 2v1 DEFENDERS BATTLE TRIGGERED at node ${nodeId}!`, {
           attacker: ballCarrier.id,
           defenders: validDefenders.map(d => d.id),
           initiator: battleInitiator
         });
 
         game.pendingBattle = {
-          attackerId: ballCarrier.id,
+          attackerIds: [ballCarrier.id],
           defenderIds: validDefenders.map(d => d.id),
           nodeId: nodeId,
           initiator: battleInitiator,
-          is2v1: true
+          is2v1: true,
+          is2v1Attackers: false,
+          is2v1Defenders: true
         };
 
-        console.log(`⚔️⚔️ 2v1 Battle setup complete`);
+        console.log(`⚔️⚔️ 2v1 Defenders Battle setup complete`);
         return true;
       }
+
       // ✅ CHECK FOR 1v1 BATTLE
-      else if (attackerTeamUnits.length === 1 && validDefenders.length === 1) {
+      if (attackerTeamUnits.length === 1 && validDefenders.length === 1) {
         const defender = validDefenders[0];
 
         if (defender.locked || defender.lockTurns > 0) {
@@ -380,37 +388,22 @@ function checkForBattles() {
         });
 
         game.pendingBattle = {
-          attackerId: ballCarrier.id,
+          attackerIds: [ballCarrier.id],
           defenderId: defender.id,
           nodeId: nodeId,
           initiator: battleInitiator,
-          is2v1: false
+          is2v1: false,
+          is2v1Attackers: false,
+          is2v1Defenders: false
         };
 
         console.log(`⚔️ 1v1 Battle setup complete`);
         return true;
       }
-      // ✅ HANDLE UNUSUAL CONFIGURATIONS
-      else if (validDefenders.length > 2) {
+
+      // Handle unusual configurations
+      if (validDefenders.length > 2) {
         console.log(`⚠️ More than 2 defenders detected at node ${nodeId}:`, {
-          attackers: attackerTeamUnits.length,
-          defenders: validDefenders.length
-        });
-        // For now, only use first 2 defenders
-        console.log(`⚔️⚔️ Treating as 2v1 with first 2 defenders`);
-
-        game.pendingBattle = {
-          attackerId: ballCarrier.id,
-          defenderIds: validDefenders.slice(0, 2).map(d => d.id),
-          nodeId: nodeId,
-          initiator: battleInitiator,
-          is2v1: true
-        };
-
-        return true;
-      }
-      else {
-        console.log(`⚠️ Unusual battle configuration at node ${nodeId}:`, {
           attackers: attackerTeamUnits.length,
           defenders: validDefenders.length
         });
@@ -911,6 +904,11 @@ function handleNodeClick(nodeId) {
     return;
   }
 
+  if (game.state === 'resetting') {
+    console.log('⚠️ Game is resetting, ignoring click');
+    return;
+  }
+
   if (game.state === 'coinToss') {
     console.log('⚠️ Still in coin toss state');
     return;
@@ -1256,6 +1254,11 @@ function selectUnit(unitId) {
     return;
   }
 
+  if (game.state === 'resetting') {
+    console.log('⚠️ Game is resetting, cannot select');
+    return;
+  }
+
   if (!mpSync.isMyTurn()) {
     console.log('❌ Not your turn');
     return;
@@ -1313,21 +1316,93 @@ function renderPendingBattlePanel() {
     return;
   }
 
-  const { attackerId, is2v1 } = game.pendingBattle;
-  const attacker = units.get(attackerId);
+  const { attackerIds, is2v1, is2v1Attackers, is2v1Defenders } = game.pendingBattle;
 
-  if (!attacker) {
-    console.log('❌ Attacker not found:', attackerId);
+  // ✅ Get all attackers
+  const attackers = attackerIds.map(id => units.get(id)).filter(Boolean);
+  if (attackers.length === 0) {
+    console.log('❌ Attackers not found:', attackerIds);
     pendingBattlePanel.classList.add('hidden');
     return;
   }
 
-  // ✅ Handle 2v1 battles
-  if (is2v1) {
+  // ✅ Handle 2 attackers vs 1 defender
+  if (is2v1Attackers) {
+    const { defenderId } = game.pendingBattle;
+    const defender = units.get(defenderId);
+
+    if (!defender) {
+      console.log('❌ Defender not found:', defenderId);
+      pendingBattlePanel.classList.add('hidden');
+      return;
+    }
+
+    console.log('⚔️⚔️ Rendering 2v1 Attackers battle panel:', {
+      attackers: attackers.map(a => `${a.name} (${a.ownerId})`),
+      defender: `${defender.name} (${defender.ownerId})`,
+      localPlayer: localPlayerRole,
+      isAttacker: attackers[0].ownerId === localPlayerRole
+    });
+
+    pendingBattlePanel.classList.remove('hidden');
+    battleText.textContent = `⚔️⚔️ ${attackers[0].name} & ${attackers[1].name} vs ${defender.name}`;
+    battleActions.innerHTML = '';
+
+    // Set up defender roll listener
+    mpSync.socket.off('promptDefenderRoll');
+    mpSync.socket.on('promptDefenderRoll', () => {
+      if (defender.ownerId === localPlayerRole) {
+        console.log(`🎲 Defender ${localPlayerRole} prompted to roll`);
+        battleActions.innerHTML = '';
+        showManualDieRoll(`Defender (${defender.name})`, (defenderRoll) => {
+          console.log(`🎲 Defender rolled: ${defenderRoll}`);
+          mpSync.socket.emit('battleRoll', {
+            roomCode,
+            role: 'defender',
+            roll: defenderRoll
+          });
+
+          battleActions.innerHTML = '';
+          const waiting = document.createElement('p');
+          waiting.className = 'text-yellow-400 text-sm mt-2';
+          waiting.textContent = 'Roll submitted, waiting for resolution...';
+          battleActions.appendChild(waiting);
+        });
+      }
+    });
+
+    if (attackers[0].ownerId !== localPlayerRole) {
+      const waiting = document.createElement('p');
+      waiting.className = 'text-yellow-400 text-sm mt-2';
+      waiting.textContent = 'Waiting for attackers to choose action...';
+      battleActions.appendChild(waiting);
+      console.log('⏳ Not attacker in 2v1 attackers, showing waiting message');
+      return;
+    }
+
+    console.log('✅ Is attacker in 2v1 attackers, showing action buttons');
+
+    ['dribble', 'pass', 'shoot'].forEach(action => {
+      const btn = document.createElement('button');
+      btn.textContent = action.charAt(0).toUpperCase() + action.slice(1);
+      btn.className = 'px-3 py-1 m-1 rounded bg-blue-700 text-white hover:bg-blue-600 font-bold';
+      btn.addEventListener('click', () => {
+        console.log(`🎯 Attackers chose: ${action} in 2v1 attackers`);
+        battleActions.querySelectorAll('button').forEach(b => b.disabled = true);
+        resolveBattle(action);
+      });
+      battleActions.appendChild(btn);
+    });
+
+    return;
+  }
+
+  // ✅ Handle 1 attacker vs 2 defenders (existing logic)
+  if (is2v1Defenders) {
     const { defenderIds } = game.pendingBattle;
 
     if (!defenderIds || defenderIds.length !== 2) {
-      console.log('❌ Invalid 2v1 battle setup:', defenderIds);
+      console.log('❌ Invalid 2v1 defenders battle setup:', defenderIds);
       pendingBattlePanel.classList.add('hidden');
       return;
     }
@@ -1341,30 +1416,28 @@ function renderPendingBattlePanel() {
       return;
     }
 
-    console.log('⚔️⚔️ Rendering 2v1 battle panel:', {
-      attacker: `${attacker.name} (${attacker.ownerId})`,
+    console.log('⚔️⚔️ Rendering 2v1 Defenders battle panel:', {
+      attacker: `${attackers[0].name} (${attackers[0].ownerId})`,
       defender1: `${defender1.name} (${defender1.ownerId})`,
       defender2: `${defender2.name} (${defender2.ownerId})`,
       localPlayer: localPlayerRole,
-      isAttacker: attacker.ownerId === localPlayerRole
+      isAttacker: attackers[0].ownerId === localPlayerRole
     });
 
     pendingBattlePanel.classList.remove('hidden');
-    battleText.textContent = `⚔️⚔️ ${attacker.name} vs ${defender1.name} & ${defender2.name}`;
+    battleText.textContent = `⚔️⚔️ ${attackers[0].name} vs ${defender1.name} & ${defender2.name}`;
     battleActions.innerHTML = '';
 
-    // Set up defender roll listener for 2v1 (defenders roll together)
-    // Set up defender roll listener for 2v1 (defenders roll together)
     mpSync.socket.off('promptDefenderRoll');
     mpSync.socket.on('promptDefenderRoll', () => {
       const defendersOwnedByLocal = [defender1, defender2].filter(d => d.ownerId === localPlayerRole);
 
       if (defendersOwnedByLocal.length === 0) {
-        console.log('🛡️ promptDefenderRoll (2v1) - not my defenders, ignoring');
+        console.log('🛡️ promptDefenderRoll (2v1 defenders) - not my defenders, ignoring');
         return;
       }
 
-      console.log(`🎲 Defenders (${localPlayerRole}) prompted to roll (owns ${defendersOwnedByLocal.map(d => d.name).join(', ')})`);
+      console.log(`🎲 Defenders (${localPlayerRole}) prompted to roll`);
       battleActions.innerHTML = '';
 
       showManualDieRoll(
@@ -1377,7 +1450,6 @@ function renderPendingBattlePanel() {
             roll: defenderRoll
           });
 
-          // Show waiting message after rolling
           battleActions.innerHTML = '';
           const waiting = document.createElement('p');
           waiting.className = 'text-yellow-400 text-sm mt-2';
@@ -1387,24 +1459,23 @@ function renderPendingBattlePanel() {
       );
     });
 
-
-    if (attacker.ownerId !== localPlayerRole) {
+    if (attackers[0].ownerId !== localPlayerRole) {
       const waiting = document.createElement('p');
       waiting.className = 'text-yellow-400 text-sm mt-2';
       waiting.textContent = 'Waiting for attacker to choose action...';
       battleActions.appendChild(waiting);
-      console.log('⏳ Not attacker in 2v1, showing waiting message');
+      console.log('⏳ Not attacker in 2v1 defenders, showing waiting message');
       return;
     }
 
-    console.log('✅ Is attacker in 2v1, showing action buttons');
+    console.log('✅ Is attacker in 2v1 defenders, showing action buttons');
 
     ['dribble', 'pass', 'shoot'].forEach(action => {
       const btn = document.createElement('button');
       btn.textContent = action.charAt(0).toUpperCase() + action.slice(1);
       btn.className = 'px-3 py-1 m-1 rounded bg-blue-700 text-white hover:bg-blue-600 font-bold';
       btn.addEventListener('click', () => {
-        console.log(`🎯 Attacker chose: ${action} in 2v1`);
+        console.log(`🎯 Attacker chose: ${action} in 2v1 defenders`);
         battleActions.querySelectorAll('button').forEach(b => b.disabled = true);
         resolveBattle(action);
       });
@@ -1425,17 +1496,16 @@ function renderPendingBattlePanel() {
   }
 
   console.log('⚔️ Rendering 1v1 battle panel:', {
-    attacker: `${attacker.name} (${attacker.ownerId})`,
+    attacker: `${attackers[0].name} (${attackers[0].ownerId})`,
     defender: `${defender.name} (${defender.ownerId})`,
     localPlayer: localPlayerRole,
-    isAttacker: attacker.ownerId === localPlayerRole
+    isAttacker: attackers[0].ownerId === localPlayerRole
   });
 
   pendingBattlePanel.classList.remove('hidden');
-  battleText.textContent = `⚔️ ${attacker.name} vs ${defender.name}`;
+  battleText.textContent = `⚔️ ${attackers[0].name} vs ${defender.name}`;
   battleActions.innerHTML = '';
 
-  // Set up defender roll listener regardless of role
   mpSync.socket.off('promptDefenderRoll');
   mpSync.socket.on('promptDefenderRoll', () => {
     if (defender.ownerId === localPlayerRole) {
@@ -1449,7 +1519,6 @@ function renderPendingBattlePanel() {
           roll: defenderRoll
         });
 
-        // Show waiting message after rolling
         battleActions.innerHTML = '';
         const waiting = document.createElement('p');
         waiting.className = 'text-yellow-400 text-sm mt-2';
@@ -1459,7 +1528,7 @@ function renderPendingBattlePanel() {
     }
   });
 
-  if (attacker.ownerId !== localPlayerRole) {
+  if (attackers[0].ownerId !== localPlayerRole) {
     const waiting = document.createElement('p');
     waiting.className = 'text-yellow-400 text-sm mt-2';
     waiting.textContent = 'Waiting for attacker to choose action...';
@@ -1482,6 +1551,7 @@ function renderPendingBattlePanel() {
     battleActions.appendChild(btn);
   });
 }
+
 
 // Helper function to initiate battle rolls for both players
 function initiateBattleRolls(action, attackerId, defenderId) {
@@ -1600,24 +1670,28 @@ function showManualDieRoll(label, callback) {
 
 
 // NEW SIMPLIFIED BATTLE RESOLUTION (like coin toss)
+// ✅ UPDATED resolveBattle function (key changes for 2v1 attackers)
 async function resolveBattle(action) {
   if (!game.pendingBattle) return;
 
-  const { attackerId, is2v1 } = game.pendingBattle;
-  const attacker = units.get(attackerId);
+  const { attackerIds, is2v1, is2v1Attackers, is2v1Defenders } = game.pendingBattle;
+  const attackers = attackerIds.map(id => units.get(id)).filter(Boolean);
 
-  if (!attacker) return;
+  if (attackers.length === 0) return;
 
-  // ✅ PRE-FLIGHT CHECK FOR PASS (works for both 1v1 and 2v1)
+  // ✅ PRE-FLIGHT CHECK FOR PASS (works for all battle types)
   let targetNodeId = null;
   if (action === 'pass') {
-    const attackerNode = game.board.getNode(attacker.position);
+    const ballCarrier = attackers.find(a => a.hasBall) || attackers[0];
+    const attackerNode = game.board.getNode(ballCarrier.position);
+
     if (attackerNode) {
       for (const nId of attackerNode.neighbors) {
         const nNode = game.board.getNode(nId);
         if (nNode) {
           for (const occId of nNode.occupants) {
-            if (units.get(occId)?.ownerId === attacker.ownerId) {
+            const occUnit = units.get(occId);
+            if (occUnit?.ownerId === ballCarrier.ownerId) {
               targetNodeId = nId;
               break;
             }
@@ -1632,8 +1706,8 @@ async function resolveBattle(action) {
     }
   }
 
-  // ✅ SHARED POST-BATTLE HANDLER (works for both 1v1 and 2v1)
-  const handleBattleComplete = async (result, rolls, is2v1Battle = false) => {
+  // ✅ SHARED POST-BATTLE HANDLER (updated for both battle types)
+  const handleBattleComplete = async (result, rolls, battleType) => {
     if (!result) {
       console.error("❌ Battle resolution failed");
       return;
@@ -1641,66 +1715,47 @@ async function resolveBattle(action) {
 
     console.log("🏆 Battle resolved - Winner:", result.winner);
 
-    // ✅ SET TURN TO WINNER
-    // if (result.winner === 'defenders') {
-    //   const defenderIds = is2v1Battle ? game.pendingBattle.defenderIds : [game.pendingBattle.defenderId];
-    //   const firstDefender = units.get(defenderIds[0]);
-    //   if (firstDefender) {
-    //     game.turnManager.currentPlayer = firstDefender.ownerId;
-    //     console.log(`✅ Turn awarded to defending team: ${firstDefender.ownerId}`);
-    //   }
-    // } else {
-    //   const winnerUnit = units.get(result.winner);
-    //   if (winnerUnit) {
-    //     game.turnManager.currentPlayer = winnerUnit.ownerId;
-    //     console.log(`✅ Turn awarded to battle winner: ${winnerUnit.ownerId}`);
-    //   }
-    // }
-
-    // ✅ IMPORTANT: Show winner BEFORE clearing battle state
-    // This ensures both clients can see who won
     showBattleWinner(result.winner, result.action);
 
-    // Clear local battle state
     game.pendingBattle = null;
     battleActions.innerHTML = '';
     pendingBattlePanel.classList.add('hidden');
     game.battleAction = null;
     game.battleTargetNode = null;
 
-    // Push to server
     await mpSync.pushToServer();
 
-    // ✅ NEW: Emit battle result with detailed info for both clients
     mpSync.socket.emit('finalizeBattle', {
       roomCode,
       result: {
         winner: result.winner,
-        winnerId: result.winner, // Unit ID
+        winnerId: result.winner,
         loser: result.loser || result.losers,
         rolls: rolls,
         action: action,
-        is2v1: is2v1Battle,
-        // ✅ Add winner display info
-        winnerName: units.get(result.winner)?.name || result.winner,
-        winnerOwner: units.get(result.winner)?.ownerId ||
-          (result.winner === 'defenders' ?
-            units.get(is2v1Battle ? game.pendingBattle?.defenderIds?.[0] : game.pendingBattle?.defenderId)?.ownerId :
-            null)
+        is2v1: !!battleType.is2v1,
+        is2v1Attackers: !!battleType.is2v1Attackers,
+        is2v1Defenders: !!battleType.is2v1Defenders,
+        winnerName: result.winner === 'attackers' || result.winner === 'defenders'
+          ? result.winner
+          : units.get(result.winner)?.name,
+        winnerOwner: result.winner === 'attackers'
+          ? attackers[0].ownerId
+          : result.winner === 'defenders'
+            ? units.get(is2v1Defenders ? game.pendingBattle?.defenderIds?.[0] : game.pendingBattle?.defenderId)?.ownerId
+            : units.get(result.winner)?.ownerId
       }
     });
 
-    // Update UI
     renderUnits();
     updateScoreboard();
     clearSelection();
     renderPendingBattlePanel();
 
-    // ✅ Check for depleted units
     checkAndLockDepletedUnits();
 
-    // ✅ CHECK IF DEFENDERS WON 2v1 AND NEED TO CHOOSE BALL RECIPIENT
-    if (is2v1Battle && result.winner === 'defenders' && result.postEffects?.chooseBallRecipient) {
+    // ✅ Handle 2v1 defenders ball choice
+    if (is2v1Defenders && result.winner === 'defenders' && result.postEffects?.chooseBallRecipient) {
       console.log('⚽ Defenders won 2v1, prompting ball recipient choice');
       const defenderIds = game.pendingBattle ?
         game.pendingBattle.defenderIds :
@@ -1712,18 +1767,25 @@ async function resolveBattle(action) {
       }
     }
 
-    // Handle post-battle states
-    if (game.state === 'postBattleMove' && result.winner === attackerId && action === 'dribble') {
+    // ✅ No post-battle move for 2v1 attackers (already handled in resolver)
+    if (is2v1Attackers) {
+      if (result.postEffects?.scoreGoal) {
+        setTimeout(() => handleGoal(), 500);
+        return;
+      }
+    }
+
+    // Handle post-battle states for other types
+    if (game.state === 'postBattleMove' && !is2v1Attackers) {
       promptPostBattleMove(result.winner);
       return;
     }
 
-    if (result.postEffects?.scoreGoal) {
+    if (result.postEffects?.scoreGoal && !is2v1Attackers) {
       setTimeout(() => handleGoal(), 500);
       return;
     }
 
-    // Check for new battles
     setTimeout(() => {
       if (checkForBattles()) {
         mpSync.pushToServer();
@@ -1732,38 +1794,177 @@ async function resolveBattle(action) {
     }, 100);
   };
 
+  // ✅ HANDLE 2v1 ATTACKERS BATTLES
+  if (is2v1Attackers) {
+    const { defenderId } = game.pendingBattle;
+    const defender = units.get(defenderId);
+
+    if (!defender) return;
+
+    console.log('⚔️⚔️ Resolving 2v1 attackers battle:', {
+      attackers: attackerIds,
+      defender: defenderId,
+      action
+    });
+
+    const battleType = game.determineBattleType(action, attackerIds, defenderId);
+
+    if (battleType && battleType.type === 'clear') {
+      console.log(`⚔️⚔️ Clear 2v1 attackers victory. Winner: ${battleType.winner}. No rolls needed.`);
+
+      const fakeRolls = battleType.winner === 'attackers'
+        ? { attackers: 6, defender: 1 }
+        : { attackers: 1, defender: 6 };
+
+      if (attackers[0].ownerId !== localPlayerRole) {
+        console.log("⏳ Defender waiting for attackers to resolve clear victory...");
+
+        const clearBattleListener = (data) => {
+          if (data.gameState && !data.gameState.pendingBattle) {
+            console.log("✅ Defender received 2v1 attackers battle completion notification");
+            mpSync.socket.off('gameStateUpdate', clearBattleListener);
+
+            game.pendingBattle = null;
+            battleActions.innerHTML = '';
+            pendingBattlePanel.classList.add('hidden');
+            game.battleAction = null;
+            game.battleTargetNode = null;
+
+            renderUnits();
+            updateScoreboard();
+            clearSelection();
+            renderPendingBattlePanel();
+          }
+        };
+
+        mpSync.socket.on('gameStateUpdate', clearBattleListener);
+        return;
+      }
+
+      console.log("⚔️⚔️ Attackers resolving clear 2v1 victory...");
+      const result = game.resolvePending2v1Battle(action, targetNodeId, fakeRolls);
+
+      await handleBattleComplete(result, fakeRolls, { is2v1: true, is2v1Attackers: true, is2v1Defenders: false });
+
+    } else if (battleType && battleType.type === 'die_roll') {
+      console.log(`🎲🎲 2v1 attackers die roll required. Starting roll sequence...`);
+
+      battleRollState = {
+        attackerRoll: null,
+        defenderRoll: null,
+        action: action,
+        targetNodeId: targetNodeId
+      };
+
+      // Attackers roll (one combined roll)
+      if (attackers[0].ownerId === localPlayerRole) {
+        console.log(`🎲 Prompting ${localPlayerRole} (ATTACKERS) to roll in 2v1 attackers`);
+        showBattleRollUI('attacker', `${attackers[0].name} & ${attackers[1].name}`, (roll) => {
+          console.log(`🎲 Attackers rolled: ${roll}`);
+          battleRollState.attackerRoll = roll;
+
+          mpSync.socket.emit('battleRoll', {
+            roomCode,
+            role: 'attacker',
+            roll: roll
+          });
+        });
+      }
+
+      // Defender rolls
+      if (defender.ownerId === localPlayerRole) {
+        console.log(`🎲 Prompting ${localPlayerRole} (DEFENDER) to roll in 2v1 attackers`);
+        showBattleRollUI('defender', defender.name, (roll) => {
+          console.log(`🎲 Defender rolled: ${roll}`);
+          battleRollState.defenderRoll = roll;
+
+          mpSync.socket.emit('battleRoll', {
+            roomCode,
+            role: 'defender',
+            roll: roll
+          });
+        });
+      }
+
+      const battleCompletionHandler = (data) => {
+        const rolls = data.gameState?.battleRolls;
+        if (!rolls) return;
+
+        console.log('📊 2v1 Attackers Battle rolls update:', {
+          attackerReady: rolls.attackerReady,
+          defenderReady: rolls.defenderReady,
+          attacker: rolls.attacker,
+          defender: rolls.defender
+        });
+
+        if (rolls.attackerReady && rolls.defenderReady &&
+          rolls.attacker !== null && rolls.defender !== null) {
+
+          console.log("✅ Both 2v1 attackers rolls complete!", rolls);
+          mpSync.socket.off('gameStateUpdate', battleCompletionHandler);
+
+          if (attackers[0].ownerId !== localPlayerRole) {
+            console.log("⏳ Waiting for attackers to resolve 2v1 attackers battle...");
+            return;
+          }
+
+          console.log("⚔️⚔️ Resolving 2v1 attackers battle...");
+
+          showBothRolls(rolls.attacker, rolls.defender, async () => {
+            const result = game.resolvePending2v1Battle(
+              battleRollState.action,
+              battleRollState.targetNodeId,
+              { attackers: rolls.attacker, defender: rolls.defender }
+            );
+
+            await handleBattleComplete(result, { attackers: rolls.attacker, defender: rolls.defender },
+              { is2v1: true, is2v1Attackers: true, is2v1Defenders: false });
+          });
+        }
+      };
+
+      mpSync.socket.on('gameStateUpdate', battleCompletionHandler);
+    } else {
+      console.error("Could not determine 2v1 attackers battle type.");
+    }
+
+    return;
+  }
+
   // ✅ HANDLE 2v1 BATTLES
-  if (is2v1) {
+  if (is2v1Defenders) {
     const { defenderIds } = game.pendingBattle;
     const defender1 = units.get(defenderIds[0]);
     const defender2 = units.get(defenderIds[1]);
 
     if (!defender1 || !defender2) return;
 
-    console.log('⚔️⚔️ Resolving 2v1 battle:', {
-      attacker: attacker.id,
+    const attacker = attackers[0]; // ✅ FIX: Define attacker from attackers array
+
+    console.log('⚔️⚔️ Resolving 2v1 defenders battle:', {
+      attacker: attackerIds[0],
       defenders: defenderIds,
       action
     });
 
-    // Determine battle type for 2v1
-    const battleType = game.determineBattleType(action, attackerId, defenderIds);
+    // Determine battle type for 2v1 defenders
+    const battleType = game.determineBattleType(action, attackerIds[0], defenderIds);
 
     if (battleType && battleType.type === 'clear') {
-      // NO DIE ROLL NEEDED FOR 2v1
-      console.log(`⚔️⚔️ Clear 2v1 victory detected. Winner: ${battleType.winner}. No rolls needed.`);
+      // NO DIE ROLL NEEDED FOR 2v1 DEFENDERS
+      console.log(`⚔️⚔️ Clear 2v1 defenders victory detected. Winner: ${battleType.winner}. No rolls needed.`);
 
-      const fakeRolls = battleType.winner === attackerId
+      const fakeRolls = battleType.winner === attackerIds[0]
         ? { attacker: 6, defenders: 1 }
         : { attacker: 1, defenders: 6 };
 
       // ✅ ONLY ATTACKER RESOLVES
       if (attacker.ownerId !== localPlayerRole) {
-        console.log("⏳ Defenders waiting for attacker to resolve clear 2v1 victory...");
+        console.log("⏳ Defenders waiting for attacker to resolve clear 2v1 defenders victory...");
 
         const clearBattleListener = (data) => {
           if (data.gameState && !data.gameState.pendingBattle) {
-            console.log("✅ Defenders received 2v1 battle completion notification");
+            console.log("✅ Defenders received 2v1 defenders battle completion notification");
             mpSync.socket.off('gameStateUpdate', clearBattleListener);
 
             // Clear local battle UI
@@ -1785,15 +1986,15 @@ async function resolveBattle(action) {
         return;
       }
 
-      console.log("⚔️⚔️ Attacker resolving clear 2v1 victory...");
+      console.log("⚔️⚔️ Attacker resolving clear 2v1 defenders victory...");
       const result = game.resolvePending2v1Battle(action, targetNodeId);
 
       // ✅ USE SHARED HANDLER
-      await handleBattleComplete(result, fakeRolls, true);
+      await handleBattleComplete(result, fakeRolls, { is2v1: true, is2v1Attackers: false, is2v1Defenders: true });
 
     } else if (battleType && battleType.type === 'die_roll') {
-      // DIE ROLL REQUIRED FOR 2v1
-      console.log(`🎲🎲 2v1 die roll required. Starting roll sequence...`);
+      // DIE ROLL REQUIRED FOR 2v1 DEFENDERS
+      console.log(`🎲🎲 2v1 defenders die roll required. Starting roll sequence...`);
 
       battleRollState = {
         attackerRoll: null,
@@ -1804,7 +2005,7 @@ async function resolveBattle(action) {
 
       // Attacker rolls
       if (attacker.ownerId === localPlayerRole) {
-        console.log(`🎲 Prompting ${localPlayerRole} (ATTACKER) to roll in 2v1`);
+        console.log(`🎲 Prompting ${localPlayerRole} (ATTACKER) to roll in 2v1 defenders`);
         showBattleRollUI('attacker', attacker.name, (roll) => {
           console.log(`🎲 Attacker rolled: ${roll}`);
           battleRollState.attackerRoll = roll;
@@ -1819,7 +2020,7 @@ async function resolveBattle(action) {
 
       // Defenders roll together (one combined roll)
       if (defender1.ownerId === localPlayerRole) {
-        console.log(`🎲 Prompting ${localPlayerRole} (DEFENDERS) to roll in 2v1`);
+        console.log(`🎲 Prompting ${localPlayerRole} (DEFENDERS) to roll in 2v1 defenders`);
         showBattleRollUI('defender', `${defender1.name} & ${defender2.name}`, (roll) => {
           console.log(`🎲 Defenders rolled: ${roll}`);
           battleRollState.defenderRoll = roll;
@@ -1837,7 +2038,7 @@ async function resolveBattle(action) {
         const rolls = data.gameState?.battleRolls;
         if (!rolls) return;
 
-        console.log('📊 2v1 Battle rolls update:', {
+        console.log('📊 2v1 Defenders Battle rolls update:', {
           attackerReady: rolls.attackerReady,
           defenderReady: rolls.defenderReady,
           attacker: rolls.attacker,
@@ -1847,16 +2048,16 @@ async function resolveBattle(action) {
         if (rolls.attackerReady && rolls.defenderReady &&
           rolls.attacker !== null && rolls.defender !== null) {
 
-          console.log("✅ Both 2v1 rolls complete!", rolls);
+          console.log("✅ Both 2v1 defenders rolls complete!", rolls);
           mpSync.socket.off('gameStateUpdate', battleCompletionHandler);
 
           // Only attacker resolves
           if (attacker.ownerId !== localPlayerRole) {
-            console.log("⏳ Waiting for attacker to resolve 2v1 battle...");
+            console.log("⏳ Waiting for attacker to resolve 2v1 defenders battle...");
             return;
           }
 
-          console.log("⚔️⚔️ Resolving 2v1 battle...");
+          console.log("⚔️⚔️ Resolving 2v1 defenders battle...");
 
           // Show both rolls (renamed to "Defenders" for 2v1)
           showBothRolls(rolls.attacker, rolls.defender, async () => {
@@ -1867,168 +2068,166 @@ async function resolveBattle(action) {
             );
 
             // ✅ USE SHARED HANDLER
-            await handleBattleComplete(result, { attacker: rolls.attacker, defenders: rolls.defender }, true);
+            await handleBattleComplete(result, { attacker: rolls.attacker, defenders: rolls.defender },
+              { is2v1: true, is2v1Attackers: false, is2v1Defenders: true });
           });
         }
       };
 
       mpSync.socket.on('gameStateUpdate', battleCompletionHandler);
     } else {
-      console.error("Could not determine 2v1 battle type.");
+      console.error("Could not determine 2v1 defenders battle type.");
     }
 
-    return; // Exit early for 2v1
+    return; // Exit early for 2v1 defenders
   }
 
-  // ✅ HANDLE 1v1 BATTLES (existing logic)
-  const { defenderId } = game.pendingBattle;
-  const defender = units.get(defenderId);
 
-  if (!defender) return;
+  // ✅ FIXED 1v1 BATTLE HANDLING in resolveBattle function
+  // Add this after the 2v1 Attackers section (around line 2089)
 
-  console.log('⚔️ Resolving 1v1 battle:', {
-    attacker: attacker.id,
-    defender: defender.id,
-    action
-  });
+  // ✅ HANDLE 1v1 BATTLES
+  if (!is2v1) {
+    const { defenderId } = game.pendingBattle;
+    const defender = units.get(defenderId);
 
-  // Determine battle type for 1v1
-  const battleType = game.determineBattleType(action, attackerId, defenderId);
+    if (!defender) return;
 
-  if (battleType && battleType.type === 'clear') {
-    // NO DIE ROLL NEEDED
-    console.log(`⚔️ Clear victory detected. Winner: ${battleType.winner}. No rolls needed.`);
+    const attacker = attackers[0]; // ✅ FIX: Define attacker for 1v1
 
-    const fakeRolls = battleType.winner === attackerId
-      ? { attacker: 6, defender: 1 }
-      : { attacker: 1, defender: 6 };
+    console.log('⚔️ Resolving 1v1 battle:', {
+      attacker: attackerIds[0],
+      defender: defenderId,
+      action
+    });
 
-    // ✅ ONLY ATTACKER RESOLVES (like die roll path)
-    if (attacker.ownerId !== localPlayerRole) {
-      console.log("⏳ Defender waiting for attacker to resolve clear victory...");
+    const battleType = game.determineBattleType(action, attackerIds[0], defenderId);
 
-      // ✅ DEFENDER LISTENS FOR BATTLE COMPLETION
-      const clearBattleListener = (data) => {
-        if (data.gameState && !data.gameState.pendingBattle) {
-          console.log("✅ Defender received battle completion notification");
-          mpSync.socket.off('gameStateUpdate', clearBattleListener);
+    if (battleType && battleType.type === 'clear') {
+      console.log(`⚔️ Clear victory detected. Winner: ${battleType.winner}. No rolls needed.`);
 
-          // Clear local battle UI
-          game.pendingBattle = null;
-          battleActions.innerHTML = '';
-          pendingBattlePanel.classList.add('hidden');
-          game.battleAction = null;
-          game.battleTargetNode = null;
+      const fakeRolls = battleType.winner === attackerIds[0]
+        ? { attacker: 6, defender: 1 }
+        : { attacker: 1, defender: 6 };
 
-          // Update UI
-          renderUnits();
-          updateScoreboard();
-          clearSelection();
-          renderPendingBattlePanel();
+      if (attacker.ownerId !== localPlayerRole) {
+        console.log("⏳ Defender waiting for attacker to resolve clear victory...");
+
+        const clearBattleListener = (data) => {
+          if (data.gameState && !data.gameState.pendingBattle) {
+            console.log("✅ Defender received battle completion notification");
+            mpSync.socket.off('gameStateUpdate', clearBattleListener);
+
+            game.pendingBattle = null;
+            battleActions.innerHTML = '';
+            pendingBattlePanel.classList.add('hidden');
+            game.battleAction = null;
+            game.battleTargetNode = null;
+
+            renderUnits();
+            updateScoreboard();
+            clearSelection();
+            renderPendingBattlePanel();
+          }
+        };
+
+        mpSync.socket.on('gameStateUpdate', clearBattleListener);
+        return;
+      }
+
+      console.log("⚔️ Attacker resolving clear victory...");
+      const result = game.resolvePendingBattle(action, targetNodeId, fakeRolls);
+
+      await handleBattleComplete(result, fakeRolls, { is2v1: false, is2v1Attackers: false, is2v1Defenders: false });
+
+    } else if (battleType && battleType.type === 'die_roll') {
+      console.log(`🎲 Die roll required. Starting roll sequence...`);
+
+      battleRollState = {
+        attackerRoll: null,
+        defenderRoll: null,
+        action: action,
+        targetNodeId: targetNodeId
+      };
+
+      // Attacker rolls
+      if (attacker.ownerId === localPlayerRole) {
+        console.log(`🎲 Prompting ${localPlayerRole} (ATTACKER) to roll`);
+        showBattleRollUI('attacker', attacker.name, (roll) => {
+          console.log(`🎲 Attacker rolled: ${roll}`);
+          battleRollState.attackerRoll = roll;
+
+          mpSync.socket.emit('battleRoll', {
+            roomCode,
+            role: 'attacker',
+            roll: roll
+          });
+        });
+      }
+
+      // Defender rolls
+      if (defender.ownerId === localPlayerRole) {
+        console.log(`🎲 Prompting ${localPlayerRole} (DEFENDER) to roll`);
+        showBattleRollUI('defender', defender.name, (roll) => {
+          console.log(`🎲 Defender rolled: ${roll}`);
+          battleRollState.defenderRoll = roll;
+
+          mpSync.socket.emit('battleRoll', {
+            roomCode,
+            role: 'defender',
+            roll: roll
+          });
+        });
+      }
+
+      const battleCompletionHandler = (data) => {
+        const rolls = data.gameState?.battleRolls;
+        if (!rolls) return;
+
+        console.log('📊 Battle rolls update:', {
+          attackerReady: rolls.attackerReady,
+          defenderReady: rolls.defenderReady,
+          attacker: rolls.attacker,
+          defender: rolls.defender
+        });
+
+        if (rolls.attackerReady && rolls.defenderReady &&
+          rolls.attacker !== null && rolls.defender !== null) {
+
+          console.log("✅ Both rolls complete!", rolls);
+          mpSync.socket.off('gameStateUpdate', battleCompletionHandler);
+
+          if (attacker.ownerId !== localPlayerRole) {
+            console.log("⏳ Waiting for attacker to resolve battle...");
+            return;
+          }
+
+          console.log("⚔️ Resolving battle...");
+
+          showBothRolls(rolls.attacker, rolls.defender, async () => {
+            const result = game.resolvePendingBattle(
+              battleRollState.action,
+              battleRollState.targetNodeId,
+              { attacker: rolls.attacker, defender: rolls.defender }
+            );
+
+            await handleBattleComplete(result, { attacker: rolls.attacker, defender: rolls.defender },
+              { is2v1: false, is2v1Attackers: false, is2v1Defenders: false });
+          });
         }
       };
 
-      mpSync.socket.on('gameStateUpdate', clearBattleListener);
-      return;
+      mpSync.socket.on('gameStateUpdate', battleCompletionHandler);
+
+    } else {
+      console.error("Could not determine battle type.");
     }
 
-    console.log("⚔️ Attacker resolving clear victory...");
-    const result = game.resolvePendingBattle(action, targetNodeId, fakeRolls);
-
-    // ✅ USE SHARED HANDLER
-    await handleBattleComplete(result, fakeRolls, false);
-
-  } else if (battleType && battleType.type === 'die_roll') {
-    // DIE ROLL REQUIRED - Use simple roll UI like coin toss
-    console.log(`🎲 Die roll required. Starting roll sequence...`);
-
-    // Reset battle roll state
-    battleRollState = {
-      attackerRoll: null,
-      defenderRoll: null,
-      action: action,
-      targetNodeId: targetNodeId
-    };
-
-    // BOTH PLAYERS ROLL IMMEDIATELY - JUST LIKE COIN TOSS
-    // Attacker rolls
-    if (attacker.ownerId === localPlayerRole) {
-      console.log(`🎲 Prompting ${localPlayerRole} (ATTACKER) to roll`);
-      showBattleRollUI('attacker', attacker.name, (roll) => {
-        console.log(`🎲 Attacker rolled: ${roll}`);
-        battleRollState.attackerRoll = roll;
-
-        // Emit to server
-        mpSync.socket.emit('battleRoll', {
-          roomCode,
-          role: 'attacker',
-          roll: roll
-        });
-      });
-    }
-
-    // Defender rolls (NO WAITING - SIMULTANEOUS)
-    if (defender.ownerId === localPlayerRole) {
-      console.log(`🎲 Prompting ${localPlayerRole} (DEFENDER) to roll`);
-      showBattleRollUI('defender', defender.name, (roll) => {
-        console.log(`🎲 Defender rolled: ${roll}`);
-        battleRollState.defenderRoll = roll;
-
-        // Emit to server
-        mpSync.socket.emit('battleRoll', {
-          roomCode,
-          role: 'defender',
-          roll: roll
-        });
-      });
-    }
-
-    // Listen for both rolls completion
-    const battleCompletionHandler = (data) => {
-      const rolls = data.gameState?.battleRolls;
-      if (!rolls) return;
-
-      console.log('📊 Battle rolls update:', {
-        attackerReady: rolls.attackerReady,
-        defenderReady: rolls.defenderReady,
-        attacker: rolls.attacker,
-        defender: rolls.defender
-      });
-
-      if (rolls.attackerReady && rolls.defenderReady &&
-        rolls.attacker !== null && rolls.defender !== null) {
-
-        console.log("✅ Both rolls complete!", rolls);
-        mpSync.socket.off('gameStateUpdate', battleCompletionHandler);
-
-        // Only attacker resolves
-        if (attacker.ownerId !== localPlayerRole) {
-          console.log("⏳ Waiting for attacker to resolve battle...");
-          return;
-        }
-
-        console.log("⚔️ Resolving battle...");
-
-        // Show both rolls
-        showBothRolls(rolls.attacker, rolls.defender, async () => {
-          const result = game.resolvePendingBattle(
-            battleRollState.action,
-            battleRollState.targetNodeId,
-            { attacker: rolls.attacker, defender: rolls.defender }
-          );
-
-          // ✅ USE SHARED HANDLER
-          await handleBattleComplete(result, { attacker: rolls.attacker, defender: rolls.defender }, false);
-        });
-      }
-    };
-
-    mpSync.socket.on('gameStateUpdate', battleCompletionHandler);
-
-  } else {
-    console.error("Could not determine battle type.");
+    return; // ✅ Add return to exit after 1v1 handling
   }
 }
+
+// ✅ HANDLE 1v1 BATTLES (existing logic)
 
 
 // ✅ ADD THIS FUNCTION HERE
@@ -2108,11 +2307,11 @@ function promptPostBattleMove(winnerId) {
   // skipBtn.textContent = 'Skip';
   // skipBtn.className = 'px-4 py-2 rounded bg-slate-700 text-white font-bold hover:bg-slate-600';
   // skipBtn.addEventListener('click', async () => {
-  //   game.state = 'inProgress';
+  game.state = 'inProgress';
   //   const el = document.getElementById('post-battle-container');
   //   if (el) document.body.removeChild(el);
-  //   await mpSync.pushToServer();
-  //   clearSelection();
+  mpSync.pushToServer();
+  clearSelection();
   // });
   // container.appendChild(skipBtn);
   // document.body.appendChild(container);
@@ -2224,45 +2423,59 @@ function showMatchEndScreen(winner) {
 
 // ...existing code...
 async function handleGoal() {
-  // Only get scorer from autoGoal check, don't use current player as fallback
+  // Only get scorer from autoGoal check
   const scorer = checkForAutoGoal();
 
-  // Only increment score if it was an auto-goal
   if (scorer) {
     game.score[scorer] = (game.score[scorer] || 0) + 1;
   }
 
   alert(`Goal scored by ${scorer || game.turnManager.currentPlayer}!`);
 
-  // Preserve stamina values keyed by ownerId::cardId (store arrays to handle duplicates)
+  // ✅ Set to resetting state
+  game.state = 'resetting';
+  game.pendingBattle = null;
+  game.postBattleWinnerId = null;
+
+  clearSelection();
+  pendingBattlePanel.classList.add('hidden');
+
+  // Preserve stamina values
   const staminaKey = (u) => `${u.ownerId}::${u.cardId}`;
   const staminaValues = new Map();
   for (const u of units.values()) {
     if (!u || !u.cardId) continue;
     const k = staminaKey(u);
     if (!staminaValues.has(k)) staminaValues.set(k, []);
-    staminaValues.get(k).push(u.stamina ?? 100);
+    staminaValues.get(k).push({
+      stamina: u.stamina ?? 100,
+      baseStamina: u.baseStamina ?? 100,
+      permanentlyLocked: u.permanentlyLocked || false
+    });
   }
 
+  // ✅ BOTH clients clear and reset locally
   const p1Cards = P1_CARDS;
   const p2Cards = P2_CARDS;
 
-  // Reset units (this may clear units map and cause spawnUnitFromCard to return different shapes)
+  // Clear all nodes
+  for (let i = 1; i <= 12; i++) {
+    const node = game.board.getNode(i);
+    if (node) node.occupants.clear();
+  }
+
   resetUnits();
 
-  // Helper that handles spawnUnitFromCard return value being either a unit object or an id string.
   const spawnWithStamina = (ownerId, cardId, position) => {
     const ret = spawnUnitFromCard(ownerId, cardId, position);
     let unit = null;
 
-    // spawnUnitFromCard might return the created Unit instance or the new unit id string
     if (ret && typeof ret === 'object' && ret.id) {
       unit = ret;
     } else if (typeof ret === 'string') {
       unit = units.get(ret);
     }
 
-    // Fallback: try to locate by owner/card/position if still not found
     if (!unit) {
       unit = Array.from(units.values()).find(u => u.ownerId === ownerId && u.cardId === cardId && Number(u.position) === Number(position));
     }
@@ -2276,12 +2489,18 @@ async function handleGoal() {
     const arr = staminaValues.get(k);
     if (arr && arr.length > 0) {
       const restored = arr.shift();
-      if (typeof restored === 'number') unit.stamina = restored;
+      unit.stamina = restored.stamina;
+      unit.baseStamina = restored.baseStamina;
+      unit.permanentlyLocked = restored.permanentlyLocked;
+      if (unit.permanentlyLocked) {
+        unit.lockTurns = 999;
+      }
     }
 
     return unit;
   };
 
+  // ✅ Both clients spawn units at starting positions
   spawnWithStamina('P1', p1Cards[0], 1);
   spawnWithStamina('P1', p1Cards[1], 2);
   spawnWithStamina('P1', p1Cards[2], 3);
@@ -2289,7 +2508,7 @@ async function handleGoal() {
   spawnWithStamina('P2', p2Cards[1], 11);
   spawnWithStamina('P2', p2Cards[2], 10);
 
-  // Set kickoff to team that was scored against (opposite of who scored)
+  // Determine kickoff team
   const teamThatScored = scorer || game.turnManager.currentPlayer;
   const kickoffTeam = teamThatScored === 'P1' ? 'P2' : 'P1';
   const firstUnit = Array.from(units.values()).find(u => u.ownerId === kickoffTeam);
@@ -2300,12 +2519,80 @@ async function handleGoal() {
     game.turnManager.currentPlayer = kickoffTeam;
   }
 
-  await mpSync.pushToServer();
+  game.state = 'inProgress';
+
+  // ✅ ONLY the kickoff team's client pushes to avoid conflicts
+  if (localPlayerRole === kickoffTeam) {
+    console.log(`✅ ${localPlayerRole} (kickoff team) pushing reset to server`);
+    // Push the authoritative state to server (or request server to compute reset).
+    // If your pushToServer returns after server acknowledgement, this is fine.
+    await mpSync.pushToServer();
+
+    // Optionally, wait for server broadcast to ensure everyone accepted it:
+    await new Promise(resolve => {
+      const timer = setTimeout(() => {
+        mpSync.socket.off('gameStateUpdate', handler);
+        console.warn('⚠️ Timeout waiting for gameStateUpdate after pushToServer');
+        resolve();
+      }, 3000); // 3s fallback
+
+      const handler = (serverRoomState) => {
+        // serverRoomState should be the payload the server sends. Guard check:
+        try {
+          // Accept the update as completion if the server state is inProgress and kickoff team has the ball
+          const gs = serverRoomState.gameState || serverRoomState;
+          if (gs.state === 'inProgress') {
+            clearTimeout(timer);
+            mpSync.socket.off('gameStateUpdate', handler);
+            resolve();
+          }
+        } catch (e) {
+          // If the shape is different, ignore but still let it resolve via timer fallback
+        }
+      };
+
+      mpSync.socket.on('gameStateUpdate', handler);
+    });
+  } else {
+    console.log(`⏳ ${localPlayerRole} waiting for kickoff team to push (waiting for server broadcast)`);
+    // Wait for the server authoritative broadcast instead of sleeping
+    await new Promise(resolve => {
+      const timer = setTimeout(() => {
+        mpSync.socket.off('gameStateUpdate', handler);
+        console.warn('⚠️ Timeout waiting for gameStateUpdate on defender side');
+        resolve();
+      }, 4000); // 4s fallback — adjust to your network expectation
+
+      const handler = (serverRoomState) => {
+        try {
+          const gs = serverRoomState.gameState || serverRoomState;
+          // Confirm the server state is the reset/inProgress state:
+          if (gs && gs.state === 'inProgress') {
+            clearTimeout(timer);
+            mpSync.socket.off('gameStateUpdate', handler);
+            // Optionally, merge participant unit data if server included them:
+            if (gs.pendingBattle) {
+              // if server provides participant unit datas, merge them before render
+              (gs.pendingBattle.attackerUnitDatas || []).forEach(u => u && units.set(u.id, u));
+              (gs.pendingBattle.defenderUnitDatas || []).forEach(u => u && units.set(u.id, u));
+            }
+            resolve();
+          }
+        } catch (e) {
+          // ignore malformed updates
+        }
+      };
+
+      mpSync.socket.on('gameStateUpdate', handler);
+    });
+  }
+
+
   renderUnits();
   updateScoreboard();
 
   if (checkMatchEnd()) {
-    return; // Match is over, don't continue
+    return;
   }
 }
 

@@ -90,90 +90,109 @@ export class MultiplayerSync {
       pos: u.position,
       ball: u.hasBall,
       stam: u.stamina,
-      bStam : u.stamina,
+      bStam: u.stamina,
       lock: u.lockTurns
     })));
   }
 
-syncFromServer(data) {
-  if (this.isProcessingUpdate) {
-    console.log("⸻ Skipping sync - update in progress");
-    return;
-  }
+  syncFromServer(data) {
+    if (this.isProcessingUpdate) {
+      console.log("⏸️ Skipping sync - update in progress");
+      return;
+    }
 
-  if (!this.game) {
-    console.log("⸻ Skipping sync - game not initialized yet");
-    return;
-  }
+    if (!this.game) {
+      console.log("⏸️ Skipping sync - game not initialized yet");
+      return;
+    }
 
-  // ✅ ONLY skip unit sync during mid-roll, but still process other data
-  const skipUnitSync = data.gameState?.battleRolls?.attackerReady && 
-                       !data.gameState?.battleRolls?.defenderReady;
-  
-  if (skipUnitSync) {
-    console.log("⚠️ Battle in progress - skipping unit sync only");
-  }
+    const isResetting = data.state === 'resetting';
 
-  console.log("🔄 Syncing from server...", {
-    kickoffChosen: data.kickoffChosen,
-    hasUnits: data.gameState?.units?.length > 0,
-    state: data.state
-  });
+    const skipUnitSync = (data.gameState?.battleRolls?.attackerReady &&
+      !data.gameState?.battleRolls?.defenderReady) ||
+      isResetting;
 
-  this.game.score.P1 = data.score.P1;
-  this.game.score.P2 = data.score.P2;
+    if (skipUnitSync) {
+      console.log(`⚠️ ${isResetting ? 'Game resetting' : 'Battle in progress'} - skipping unit sync only`);
+    }
 
-  this.game.turnManager.currentPlayer = data.turn;
-  this.game.turnManager.turnNumber = data.turnNumber || 1;
+    console.log("🔄 Syncing from server...", {
+      kickoffChosen: data.kickoffChosen,
+      hasUnits: data.gameState?.units?.length > 0,
+      state: data.state
+    });
 
-  this.game.state = data.state;
+    this.game.score.P1 = data.score.P1;
+    this.game.score.P2 = data.score.P2;
 
-  // ✅ Only skip unit sync if mid-roll
-  if (data.gameState && data.gameState.units && data.gameState.units.length > 0 && !skipUnitSync) {
-    if (data.kickoffChosen || data.state === 'inProgress') {
-      const newHash = this.createUnitsHash(data.gameState.units);
-      if (newHash !== this.lastSyncedUnitsHash) {
-        console.log("📦 Units state changed, syncing...");
-        this.syncUnits(data.gameState.units);
-        this.lastSyncedUnitsHash = newHash;
+    this.game.turnManager.currentPlayer = data.turn;
+    this.game.turnManager.turnNumber = data.turnNumber || 1;
+
+    this.game.state = data.state;
+
+    if (data.gameState && data.gameState.units && data.gameState.units.length > 0 && !skipUnitSync) {
+      if (data.kickoffChosen || data.state === 'inProgress') {
+        const newHash = this.createUnitsHash(data.gameState.units);
+        if (newHash !== this.lastSyncedUnitsHash) {
+          console.log("📦 Units state changed, syncing...");
+          this.syncUnits(data.gameState.units);
+          this.lastSyncedUnitsHash = newHash;
+        }
       }
     }
-  }
 
-  // ✅ Always sync battle state
-  const incomingBattle = data.gameState?.pendingBattle;
-  const battleStateChanged = JSON.stringify(incomingBattle) !== JSON.stringify(this.lastPendingBattleState);
+    // ✅ UPDATED BATTLE STATE SYNC
+    const incomingBattle = data.gameState?.pendingBattle;
+    const battleStateChanged = JSON.stringify(incomingBattle) !== JSON.stringify(this.lastPendingBattleState);
 
-  if (battleStateChanged) {
-    console.log("⚔️ Battle state changed:", incomingBattle);
-    this.lastPendingBattleState = incomingBattle ? { ...incomingBattle } : null;
+    if (battleStateChanged) {
+      console.log("⚔️ Battle state changed:", incomingBattle);
+      this.lastPendingBattleState = incomingBattle ? { ...incomingBattle } : null;
 
-    if (incomingBattle && incomingBattle.attackerId) {
-      // Handle both 1v1 and 2v1
-      if (incomingBattle.is2v1 && incomingBattle.defenderIds) {
-        this.game.pendingBattle = {
-          attackerId: incomingBattle.attackerId,
-          defenderIds: incomingBattle.defenderIds,
-          nodeId: incomingBattle.nodeId,
-          is2v1: true
-        };
-        console.log(`⚔️⚔️ Synced 2v1 battle: ${incomingBattle.attackerId} vs [${incomingBattle.defenderIds.join(', ')}]`);
-      } else if (incomingBattle.defenderId) {
-        this.game.pendingBattle = {
-          attackerId: incomingBattle.attackerId,
-          defenderId: incomingBattle.defenderId,
-          nodeId: incomingBattle.nodeId,
-          is2v1: false
-        };
-        console.log(`⚔️ Synced 1v1 battle: ${incomingBattle.attackerId} vs ${incomingBattle.defenderId}`);
+      if (incomingBattle && incomingBattle.attackerIds) {
+        // ✅ Handle 2v1 Attackers
+        if (incomingBattle.is2v1Attackers && incomingBattle.defenderId) {
+          this.game.pendingBattle = {
+            attackerIds: incomingBattle.attackerIds,
+            defenderId: incomingBattle.defenderId,
+            nodeId: incomingBattle.nodeId,
+            is2v1: true,
+            is2v1Attackers: true,
+            is2v1Defenders: false
+          };
+          console.log(`⚔️⚔️ Synced 2v1 attackers battle: [${incomingBattle.attackerIds.join(', ')}] vs ${incomingBattle.defenderId}`);
+        }
+        // ✅ Handle 2v1 Defenders
+        else if (incomingBattle.is2v1Defenders && incomingBattle.defenderIds) {
+          this.game.pendingBattle = {
+            attackerIds: incomingBattle.attackerIds,
+            defenderIds: incomingBattle.defenderIds,
+            nodeId: incomingBattle.nodeId,
+            is2v1: true,
+            is2v1Attackers: false,
+            is2v1Defenders: true
+          };
+          console.log(`⚔️⚔️ Synced 2v1 defenders battle: ${incomingBattle.attackerIds[0]} vs [${incomingBattle.defenderIds.join(', ')}]`);
+        }
+        // ✅ Handle 1v1
+        else if (incomingBattle.defenderId) {
+          this.game.pendingBattle = {
+            attackerIds: incomingBattle.attackerIds,
+            defenderId: incomingBattle.defenderId,
+            nodeId: incomingBattle.nodeId,
+            is2v1: false,
+            is2v1Attackers: false,
+            is2v1Defenders: false
+          };
+          console.log(`⚔️ Synced 1v1 battle: ${incomingBattle.attackerIds[0]} vs ${incomingBattle.defenderId}`);
+        }
+      } else {
+        this.game.pendingBattle = undefined;
       }
-    } else {
-      this.game.pendingBattle = undefined;
     }
-  }
 
-  this.onStateChange(data);
-}
+    this.onStateChange(data);
+  }
 
   syncUnits(serverUnits) {
     console.log("🔧 Syncing units from server...");
@@ -206,7 +225,8 @@ syncFromServer(data) {
         position: u.position,
         hasBall: u.hasBall || false,
         stamina: u.stamina ?? 100,
-        baseStamina: u.stamina ?? 100,
+        baseStamina: u.baseStamina ?? u.stamina ?? 100,
+        permanentlyLocked: u.permanentlyLocked || false,
         lockTurns: u.lockTurns ?? 0,
         stats: u.stats,
         rarity: u.rarity
@@ -224,9 +244,11 @@ syncFromServer(data) {
     console.log(`✅ Synced ${validUnits.length} units, ${ballCarrierCount} ball carrier(s)`);
   }
 
+
+  // ✅ UPDATED pushToServer function (inside MultiplayerSync class)
   async pushToServer() {
     if (this.isProcessingUpdate) {
-      console.log("⸻ Skipping push - update in progress");
+      console.log("⏸ Skipping push - update in progress");
       return;
     }
 
@@ -255,8 +277,9 @@ syncFromServer(data) {
           position: u.position ?? null,
           hasBall: hasBall,
           stamina: u.stamina ?? 100,
-          baseStamina: u.stamina ?? 100,
+          baseStamina: u.baseStamina ?? u.stamina ?? 100,
           lockTurns: u.lockTurns ?? 0,
+          permanentlyLocked: u.permanentlyLocked || false,
           stats: u.stats ?? null,
           rarity: u.rarity ?? null
         };
@@ -264,33 +287,50 @@ syncFromServer(data) {
 
       let pendingBattleData = null;
 
-      // ✅ Only include pendingBattle if there's one actively ongoing
+      // ✅ UPDATED PENDING BATTLE SERIALIZATION
       if (this.game.pendingBattle) {
         const pb = this.game.pendingBattle;
-        const is2v1 = pb.is2v1 || (Array.isArray(pb.defenderIds) && pb.defenderIds.length === 2);
 
-        if (is2v1) {
+        // ✅ Handle 2v1 Attackers
+        if (pb.is2v1Attackers) {
           pendingBattleData = {
-            attackerId: pb.attackerId,
+            attackerIds: pb.attackerIds ?? [],
+            defenderId: pb.defenderId ?? null,
+            nodeId: pb.nodeId ?? null,
+            is2v1: true,
+            is2v1Attackers: true,
+            is2v1Defenders: false,
+            initiator: pb.initiator ?? this.game.turnManager.currentPlayer
+          };
+        }
+        // ✅ Handle 2v1 Defenders
+        else if (pb.is2v1Defenders) {
+          pendingBattleData = {
+            attackerIds: pb.attackerIds ?? [],
             defenderIds: pb.defenderIds ?? [],
             nodeId: pb.nodeId ?? null,
             is2v1: true,
+            is2v1Attackers: false,
+            is2v1Defenders: true,
             initiator: pb.initiator ?? this.game.turnManager.currentPlayer
           };
-        } else {
+        }
+        // ✅ Handle 1v1
+        else {
           pendingBattleData = {
-            attackerId: pb.attackerId,
+            attackerIds: pb.attackerIds ?? [],
             defenderId: pb.defenderId ?? null,
             nodeId: pb.nodeId ?? null,
             is2v1: false,
+            is2v1Attackers: false,
+            is2v1Defenders: false,
             initiator: pb.initiator ?? this.game.turnManager.currentPlayer
           };
         }
       } else {
-        // ❌ Don’t override the server’s battle state mid-fight
         if (this.game.state === 'battle') {
           console.log('⚠️ Skipping pendingBattle reset - battle in progress');
-          pendingBattleData = undefined; // <-- key part
+          pendingBattleData = undefined;
         }
       }
 
@@ -320,6 +360,7 @@ syncFromServer(data) {
       }, 100);
     }
   }
+
 
   isMyTurn() {
     return this.game.turnManager.currentPlayer === this.localPlayerRole;
