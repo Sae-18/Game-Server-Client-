@@ -26,9 +26,10 @@ function generateRoomCode() {
 }
 
 io.on('connection', (socket) => {
-  console.log(`🔌 Client connected: ${socket.id}`);
+  console.log(`ðŸ”Œ Client connected: ${socket.id}`);
 
   // CREATE ROOM
+  // âœ… ADD to room structure in createRoom
   socket.on('createRoom', (callback) => {
     const roomCode = generateRoomCode();
     const room = {
@@ -44,6 +45,14 @@ io.on('connection', (socket) => {
       coinTossState: 'pending',
       coinTossRolls: { P1: null, P2: null },
       kickoffChosen: false,
+      // âœ… NEW: Substitution state
+      substitutionState: {
+        active: false,
+        P1: null,
+        P2: null,
+        P1Ready: false,
+        P2Ready: false
+      },
       gameState: {
         units: [],
         pendingBattle: null,
@@ -63,8 +72,69 @@ io.on('connection', (socket) => {
     socket.roomCode = roomCode;
     socket.playerRole = 'P1';
 
-    console.log(`✅ Room created: ${roomCode} by ${socket.id}`);
+    console.log(`âœ… Room created: ${roomCode} by ${socket.id}`);
     callback({ success: true, roomCode, playerRole: 'P1' });
+  });
+
+  // âœ… NEW: Handle substitution submission
+  socket.on('submitSubstitution', (data) => {
+    const { roomCode, playerRole, substitutions } = data;
+    const room = rooms.get(roomCode);
+
+    if (!room) {
+      console.error(`âŒ Room not found: ${roomCode}`);
+      return;
+    }
+
+    console.log(`ðŸ“ ${playerRole} submitted substitution:`, substitutions);
+
+    // Store player's substitution choice
+    room.substitutionState[playerRole] = substitutions;
+    room.substitutionState[`${playerRole}Ready`] = true;
+
+    // Check if both players are ready
+    if (room.substitutionState.P1Ready && room.substitutionState.P2Ready) {
+      console.log('âœ… Both players submitted substitutions, broadcasting results');
+
+      // Broadcast to both players
+      io.to(roomCode).emit('substitutionComplete', {
+        substitutionsComplete: true,
+        p1Substitution: room.substitutionState.P1,
+        p2Substitution: room.substitutionState.P2
+      });
+
+      // Reset substitution state
+      room.substitutionState = {
+        active: false,
+        P1: null,
+        P2: null,
+        P1Ready: false,
+        P2Ready: false
+      };
+    } else {
+      console.log(`â³ Waiting for ${room.substitutionState.P1Ready ? 'P2' : 'P1'} to submit`);
+    }
+  });
+
+  // âœ… NEW: Start substitution phase (called by client after goal)
+  // âœ… FIX server.js - Make startSubstitution broadcast immediately
+  socket.on('startSubstitution', (roomCode) => {
+    const room = rooms.get(roomCode);
+    if (!room) return;
+
+    console.log(`ðŸ”„ Starting substitution phase for room ${roomCode}`);
+
+    room.substitutionState = {
+      active: true,
+      P1: null,
+      P2: null,
+      P1Ready: false,
+      P2Ready: false
+    };
+
+    // âœ… IMMEDIATELY broadcast to both clients
+    io.to(roomCode).emit('substitutionPhaseStarted');
+    console.log(`ðŸ“¢ Broadcasted substitutionPhaseStarted to room ${roomCode}`);
   });
 
   // JOIN ROOM
@@ -85,7 +155,7 @@ io.on('connection', (socket) => {
     socket.roomCode = roomCode;
     socket.playerRole = 'P2';
 
-    console.log(`✅ ${socket.id} joined room: ${roomCode} as P2`);
+    console.log(`âœ… ${socket.id} joined room: ${roomCode} as P2`);
 
     // Notify both players
     io.to(roomCode).emit('roomUpdate', room);
@@ -103,13 +173,13 @@ io.on('connection', (socket) => {
   });
 
   // UPDATE GAME STATE
-  // ✅ UPDATED 'updateGameState' socket handler (inside io.on('connection'))
+  // âœ… UPDATED 'updateGameState' socket handler (inside io.on('connection'))
   socket.on('updateGameState', (data) => {
     const { roomCode } = data;
     const room = rooms.get(roomCode);
 
     if (!room) {
-      console.error(`❌ Room not found: ${roomCode}`);
+      console.error(`âŒ Room not found: ${roomCode}`);
       return;
     }
 
@@ -121,16 +191,16 @@ io.on('connection', (socket) => {
     if (data.gameState) {
       if (data.gameState.units) room.gameState.units = data.gameState.units;
 
-      // ✅ UPDATED PENDING BATTLE HANDLING
+      // âœ… UPDATED PENDING BATTLE HANDLING
       if (data.gameState.pendingBattle !== undefined) {
         const battle = data.gameState.pendingBattle;
 
         // Only allow clearing IF explicitly finalized server-side
         if (battle === null && !room.gameState.battleFinalizing) {
-          console.log(`⚠️ Ignoring client attempt to clear battle (room: ${roomCode})`);
+          console.log(`âš ï¸ Ignoring client attempt to clear battle (room: ${roomCode})`);
         }
         else if (battle !== null) {
-          // ✅ Store new pending battle with all flags
+          // âœ… Store new pending battle with all flags
           room.gameState.pendingBattle = {
             attackerIds: battle.attackerIds ?? [],
             nodeId: battle.nodeId,
@@ -140,20 +210,20 @@ io.on('connection', (socket) => {
             initiator: battle.initiator || null
           };
 
-          // ✅ Handle 2v1 Attackers
+          // âœ… Handle 2v1 Attackers
           if (battle.is2v1Attackers && battle.defenderId) {
             room.gameState.pendingBattle.defenderId = battle.defenderId;
-            console.log(`⚔️⚔️ 2v1 Attackers Battle stored: [${battle.attackerIds.join(', ')}] vs ${battle.defenderId}`);
+            console.log(`âš”ï¸âš”ï¸ 2v1 Attackers Battle stored: [${battle.attackerIds.join(', ')}] vs ${battle.defenderId}`);
           }
-          // ✅ Handle 2v1 Defenders
+          // âœ… Handle 2v1 Defenders
           else if (battle.is2v1Defenders && battle.defenderIds) {
             room.gameState.pendingBattle.defenderIds = battle.defenderIds;
-            console.log(`⚔️⚔️ 2v1 Defenders Battle stored: ${battle.attackerIds[0]} vs [${battle.defenderIds.join(', ')}]`);
+            console.log(`âš”ï¸âš”ï¸ 2v1 Defenders Battle stored: ${battle.attackerIds[0]} vs [${battle.defenderIds.join(', ')}]`);
           }
-          // ✅ Handle 1v1
+          // âœ… Handle 1v1
           else if (battle.defenderId) {
             room.gameState.pendingBattle.defenderId = battle.defenderId;
-            console.log(`⚔️ 1v1 Battle stored: ${battle.attackerIds[0]} vs ${battle.defenderId}`);
+            console.log(`âš”ï¸ 1v1 Battle stored: ${battle.attackerIds[0]} vs ${battle.defenderId}`);
           }
         }
       }
@@ -175,7 +245,7 @@ io.on('connection', (socket) => {
     if (data.coinTossState !== undefined) room.coinTossState = data.coinTossState;
     if (data.coinTossRolls) room.coinTossRolls = data.coinTossRolls;
 
-    console.log(`📤 Broadcasting update for room: ${roomCode}`);
+    console.log(`ðŸ“¤ Broadcasting update for room: ${roomCode}`);
 
     // Broadcast to all clients in the room
     io.to(roomCode).emit('gameStateUpdate', room);
@@ -224,11 +294,11 @@ io.on('connection', (socket) => {
     if (role === 'attacker') {
       room.gameState.battleRolls.attacker = roll;
       room.gameState.battleRolls.attackerReady = true;
-      console.log(`🎲 Attacker rolled ${roll} in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
+      console.log(`ðŸŽ² Attacker rolled ${roll} in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
     } else {
       room.gameState.battleRolls.defender = roll;
       room.gameState.battleRolls.defenderReady = true;
-      console.log(`🎲 Defender(s) rolled ${roll} in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
+      console.log(`ðŸŽ² Defender(s) rolled ${roll} in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
     }
 
     // Emit the updated game state to all clients in the room
@@ -239,12 +309,12 @@ io.on('connection', (socket) => {
       // Give clients a short delay to re-render before prompting
       setTimeout(() => {
         io.to(roomCode).emit('promptDefenderRoll');
-        console.log(`🛡️ Prompting defender(s) to roll in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
+        console.log(`ðŸ›¡ï¸ Prompting defender(s) to roll in ${is2v1 ? '2v1' : '1v1'} battle (room: ${roomCode})`);
       }, 500);
     }
   });
 
-  // 🔥 FINALIZE BATTLE (triggered once both rolls are ready)
+  // ðŸ”¥ FINALIZE BATTLE (triggered once both rolls are ready)
   socket.on('finalizeBattle', (data) => {
     const { roomCode, result } = data;
     const room = rooms.get(roomCode);
@@ -271,7 +341,7 @@ io.on('connection', (socket) => {
       is2v1Defenders ? '2v1 Defenders' :
         is2v1 ? '2v1' : '1v1';
 
-    console.log(`🏆 ${battleTypeStr} Battle finalized in room ${roomCode}. Winner: ${result.winner}`);
+    console.log(`ðŸ† ${battleTypeStr} Battle finalized in room ${roomCode}. Winner: ${result.winner}`);
 
     // Broadcast battle resolution to everyone in the room
     io.to(roomCode).emit('battleResolved', {
@@ -284,7 +354,34 @@ io.on('connection', (socket) => {
       is2v1Defenders: is2v1Defenders
     });
 
-    // Also push updated game state
+    // âœ… NEW: If goal was scored, update score and trigger substitution
+    if (result.goalScored && result.scorer) {
+      console.log(`âš½ Goal scored by ${result.scorer} in room ${roomCode}`);
+
+      // Update server-side score
+      room.score[result.scorer] = (room.score[result.scorer] || 0) + 1;
+
+      // Broadcast goal event to both clients
+      io.to(roomCode).emit('goalScored', {
+        scorer: result.scorer,
+        score: room.score
+      });
+
+      // After a short delay, trigger substitution phase
+      setTimeout(() => {
+        console.log(`ðŸ”„ Starting substitution phase for room ${roomCode}`);
+        room.substitutionState = {
+          active: true,
+          P1: null,
+          P2: null,
+          P1Ready: false,
+          P2Ready: false
+        };
+        io.to(roomCode).emit('substitutionPhaseStarted');
+      }, 2000); // 2 second delay for goal celebration
+    }
+
+    // Push updated game state
     io.to(roomCode).emit('gameStateUpdate', room);
 
     room.gameState.battleFinalizing = false;
@@ -306,12 +403,12 @@ io.on('connection', (socket) => {
     };
 
     io.to(roomCode).emit('gameStateUpdate', room);
-    console.log(`🧹 Battle cleared in room ${roomCode}`);
+    console.log(`ðŸ§¹ Battle cleared in room ${roomCode}`);
   });
 
   // DISCONNECT
   socket.on('disconnect', () => {
-    console.log(`❌ Client disconnected: ${socket.id}`);
+    console.log(`âŒ Client disconnected: ${socket.id}`);
 
     // Find and clean up room
     const roomCode = socket.roomCode;
@@ -326,7 +423,7 @@ io.on('connection', (socket) => {
         // Delete room after a delay
         setTimeout(() => {
           rooms.delete(roomCode);
-          console.log(`🗑️ Room deleted: ${roomCode}`);
+          console.log(`ðŸ—‘ï¸ Room deleted: ${roomCode}`);
         }, 5000);
       }
     }
@@ -335,5 +432,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`ðŸš€ Server running on port ${PORT}`);
 });
